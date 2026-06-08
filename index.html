@@ -425,7 +425,30 @@ const CHANNEL = '@leetraderarc';
 const MAX_SIGNALS = 10;
 
 let allSignals = [];
+let lastUpdateId = 0;
 
+/* =========================
+   SESSION CHECK (REAL TIME)
+   ========================= */
+function getSessionStatus() {
+  const now = new Date();
+  const hour = now.getUTCHours(); // use UTC for forex sessions
+
+  // London: 07:00 - 16:00 UTC
+  if (hour >= 7 && hour < 16) return "London Active";
+
+  // New York: 12:00 - 21:00 UTC
+  if (hour >= 12 && hour < 21) return "New York Active";
+
+  // Asian: 23:00 - 08:00 UTC
+  if (hour >= 23 || hour < 8) return "Asian Active";
+
+  return "Market Closed";
+}
+
+/* =========================
+   PARSE SIGNAL
+   ========================= */
 function parseSignal(msg) {
   if (!msg || !msg.text) return null;
 
@@ -502,6 +525,9 @@ function processCommands(msg) {
   }
 }
 
+/* =========================
+   RENDER
+   ========================= */
 function renderSignals() {
   const grid = document.getElementById('signalsGrid');
 
@@ -542,14 +568,22 @@ function renderSignals() {
           <span>${s.time}</span>
         </div>
 
+        <div style="font-size:11px;color:#6b7490;margin-top:6px;">
+          Market: ${getSessionStatus()}
+        </div>
+
       </div>
     `;
   }).join('');
 }
 
+/* =========================
+   FETCH SIGNALS (FIXED)
+   - prevents old Telegram posts reloading
+   ========================= */
 async function fetchSignals() {
   try {
-    const res = await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/getUpdates`);
+    const res = await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/getUpdates?offset=${lastUpdateId + 1}`);
     const data = await res.json();
 
     if (!data.ok) return;
@@ -557,8 +591,11 @@ async function fetchSignals() {
     let signals = [];
 
     data.result.forEach(u => {
+      lastUpdateId = u.update_id; // IMPORTANT FIX
+
       const msg = u.channel_post || u.message;
       const sig = parseSignal(msg);
+
       if (sig) signals.unshift(sig);
     });
 
@@ -568,6 +605,7 @@ async function fetchSignals() {
     });
 
     allSignals = signals;
+
     renderSignals();
 
   } catch (e) {
