@@ -422,17 +422,17 @@ Session: London</div>
 <script>
   const BOT_TOKEN = '8709177130:AAHF2LnJILRW8TLY6B0YxljjZtWveRmc9AA';
   const CHANNEL = '@leetraderarc';
-  let lastUpdateId = 0;
+
+  const MAX_SIGNALS = 10;
   let allSignals = [];
 
-  // Parse a Telegram message into a signal object or null
   function parseSignal(msg) {
     if (!msg || !msg.text) return null;
+
     const text = msg.text.trim();
     const lines = text.split('\n').map(l => l.trim()).filter(Boolean);
     if (lines.length < 2) return null;
 
-    // First line: "XAUUSD BUY" or "XAUUSD SELL"
     const firstLine = lines[0].toUpperCase();
     const dirMatch = firstLine.match(/^([A-Z0-9]+)\s+(BUY|SELL)/);
     if (!dirMatch) return null;
@@ -440,30 +440,31 @@ Session: London</div>
     const pair = dirMatch[1];
     const direction = dirMatch[2].toLowerCase();
 
-    let entry = '', sl = '', tp = '', session = 'London';
+    let entry = '', sl = '', tp = [];
 
-    lines.forEach(line => {
+    for (let line of lines) {
       const l = line.toLowerCase();
-      if (l.startsWith('entry:')) entry = line.split(':')[1]?.trim() || '';
-      else if (l.startsWith('sl:') || l.startsWith('stop loss:') || l.startsWith('stop:')) entry = entry || '', sl = line.split(':').slice(1).join(':').trim();
-      else if (l.startsWith('tp:') || l.startsWith('take profit:') || l.startsWith('target:')) tp = line.split(':').slice(1).join(':').trim();
-      else if (l.startsWith('session:')) session = line.split(':')[1]?.trim() || 'London';
-    });
 
-    // Re-parse carefully
-    entry = ''; sl = ''; tp = '';
-    lines.forEach(line => {
-      const lower = line.toLowerCase();
-      if (/^entry\s*:/.test(lower)) entry = line.replace(/^entry\s*:/i, '').trim();
-      else if (/^sl\s*:/.test(lower) || /^stop loss\s*:/i.test(lower) || /^stop\s*:/i.test(lower)) sl = line.replace(/^[^:]+:/, '').trim();
-      else if (/^tp\s*:/.test(lower) || /^take profit\s*:/i.test(lower) || /^target\s*:/i.test(lower)) tp = line.replace(/^[^:]+:/, '').trim();
-      else if (/^session\s*:/i.test(lower)) session = line.replace(/^session\s*:/i, '').trim();
-    });
+      if (l.startsWith('entry:')) {
+        entry = line.split(':')[1]?.trim() || '';
+      }
 
-    if (!entry && !tp) return null; // Not enough data
+      else if (l.startsWith('sl:') || l.startsWith('stop loss:') || l.startsWith('stop:')) {
+        sl = line.split(':').slice(1).join(':').trim();
+      }
+
+      else if (l.startsWith('tp')) {
+        const val = line.split(':').slice(1).join(':').trim();
+        if (val) tp.push(val);
+      }
+    }
 
     const date = msg.date ? new Date(msg.date * 1000) : new Date();
-    const time = date.toLocaleTimeString('en-KE', { hour: '2-digit', minute: '2-digit', hour12: true });
+    const time = date.toLocaleTimeString('en-KE', {
+      hour: '2-digit',
+      minute: '2-digit',
+      hour12: true
+    });
 
     return {
       id: msg.message_id,
@@ -471,20 +472,17 @@ Session: London</div>
       direction,
       entry: entry || '—',
       sl: sl || '—',
-      tp: tp || '—',
-      session: session || 'London',
+      tp: tp.length ? tp.join(' | ') : '—',
       status: 'active',
-      time,
-      raw: text
+      time
     };
   }
 
-  // Render signal cards
   function renderSignals() {
     const grid = document.getElementById('signalsGrid');
 
     if (!allSignals.length) {
-      grid.innerHTML = '<div class="no-signals">No signals posted yet. Check back during session hours.</div>';
+      grid.innerHTML = '<div class="no-signals">No signals yet</div>';
       return;
     }
 
@@ -494,85 +492,63 @@ Session: London</div>
           <div class="signal-pair">${s.pair}</div>
           <div class="signal-direction ${s.direction}">${s.direction.toUpperCase()}</div>
         </div>
+
         <div class="signal-levels">
-          <div class="signal-level-item">
+          <div>
             <div class="signal-level-label">Entry</div>
             <div class="signal-level-val">${s.entry}</div>
           </div>
-          <div class="signal-level-item">
+
+          <div>
             <div class="signal-level-label">TP</div>
             <div class="signal-level-val tp">${s.tp}</div>
           </div>
-          <div class="signal-level-item">
+
+          <div>
             <div class="signal-level-label">SL</div>
             <div class="signal-level-val sl">${s.sl}</div>
           </div>
         </div>
+
         <div class="signal-footer">
-          <span class="signal-session">${s.session} Session</span>
-          <span class="signal-status ${s.status}">${s.status === 'active' ? 'Active' : s.status === 'hit' ? 'TP Hit ✓' : 'Closed'}</span>
+          <span class="signal-session">${s.session || 'London'}</span>
+          <span class="signal-status active">ACTIVE</span>
           <span class="signal-time">${s.time}</span>
         </div>
       </div>
     `).join('');
   }
 
-  // Fetch messages from Telegram
   async function fetchSignals() {
     try {
-      const url = `https://api.telegram.org/bot${BOT_TOKEN}/getUpdates?chat_id=${CHANNEL}&limit=50&allowed_updates=["channel_post"]`;
+      const url = `https://api.telegram.org/bot${BOT_TOKEN}/getUpdates`;
       const res = await fetch(url);
       const data = await res.json();
 
-      if (!data.ok) {
-        showError('Could not connect to Telegram. Make sure the bot is added to your channel as an admin.');
-        return;
-      }
+      if (!data.ok) return;
 
       const updates = data.result || [];
-      const newSignals = [];
+      const signals = [];
 
-      updates.forEach(update => {
+      for (let update of updates) {
         const msg = update.channel_post;
-        if (!msg) return;
-        const signal = parseSignal(msg);
-        if (signal) newSignals.unshift(signal);
-      });
+        if (!msg) continue;
 
-      if (newSignals.length > 0 || allSignals.length === 0) {
-        allSignals = newSignals;
-        renderSignals();
+        const signal = parseSignal(msg);
+        if (signal) signals.unshift(signal);
       }
 
-      const now = new Date().toLocaleTimeString('en-KE', { hour: '2-digit', minute: '2-digit', hour12: true });
-      document.getElementById('refreshInfo').textContent = `Last updated: ${now} · Auto-refreshes every 60s`;
+      allSignals = signals.slice(0, MAX_SIGNALS);
+      renderSignals();
 
-    } catch (err) {
-      showError('Network error. Check your connection.');
+      document.getElementById('refreshInfo').textContent =
+        `Updated: ${new Date().toLocaleTimeString()}`;
+
+    } catch (e) {
+      console.log(e);
     }
   }
 
-  function showError(msg) {
-    const grid = document.getElementById('signalsGrid');
-    if (allSignals.length === 0) {
-      grid.innerHTML = `<div class="signals-error">⚠ ${msg}</div>`;
-    }
-  }
-
-  // Contact form
-  function submitForm() {
-    const name = document.getElementById('formName').value.trim();
-    const contact = document.getElementById('formContact').value.trim();
-    const interest = document.getElementById('formInterest').value;
-    if (!name || !contact || !interest) { alert('Please fill in all required fields.'); return; }
-    document.getElementById('formSuccess').style.display = 'block';
-    document.getElementById('formName').value = '';
-    document.getElementById('formContact').value = '';
-    document.getElementById('formInterest').value = '';
-    document.getElementById('formMessage').value = '';
-  }
-
-  // Init
   fetchSignals();
   setInterval(fetchSignals, 60000);
 </script>
