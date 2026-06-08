@@ -420,137 +420,233 @@ Session: London</div>
 </footer>
 
 <script>
-  const BOT_TOKEN = '8709177130:AAHF2LnJILRW8TLY6B0YxljjZtWveRmc9AA';
-  const CHANNEL = '@leetraderarc';
+const BOT_TOKEN = '8709177130:AAHF2LnJILRW8TLY6B0YxljjZtWveRmc9AA';
+const CHANNEL = '@leetraderarc';
+const MAX_SIGNALS = 10;
 
-  const MAX_SIGNALS = 10;
-  let allSignals = [];
 
-  function parseSignal(msg) {
-    if (!msg || !msg.text) return null;
+let allSignals = [];
 
-    const text = msg.text.trim();
-    const lines = text.split('\n').map(l => l.trim()).filter(Boolean);
-    if (lines.length < 2) return null;
+function parseSignal(msg) {
+  if (!msg || !msg.text) return null;
 
-    const firstLine = lines[0].toUpperCase();
-    const dirMatch = firstLine.match(/^([A-Z0-9]+)\s+(BUY|SELL)/);
-    if (!dirMatch) return null;
+  const text = msg.text.trim();
+  const lines = text.split('\n').map(x => x.trim());
 
-    const pair = dirMatch[1];
-    const direction = dirMatch[2].toLowerCase();
+  const firstLine = lines[0].toUpperCase();
+  const match = firstLine.match(/^([A-Z0-9]+)\s+(BUY|SELL)$/);
 
-    let entry = '', sl = '', tp = [];
+  if (!match) return null;
 
-    for (let line of lines) {
-      const l = line.toLowerCase();
+  const pair = match[1];
+  const direction = match[2].toLowerCase();
 
-      if (l.startsWith('entry:')) {
-        entry = line.split(':')[1]?.trim() || '';
-      }
+  let entry = '';
+  let sl = '';
 
-      else if (l.startsWith('sl:') || l.startsWith('stop loss:') || l.startsWith('stop:')) {
-        sl = line.split(':').slice(1).join(':').trim();
-      }
+  let tp1 = '';
+  let tp2 = '';
+  let tp3 = '';
+  let tp4 = '';
+  let tp5 = '';
+  let tp6 = '';
 
-      else if (l.startsWith('tp')) {
-        const val = line.split(':').slice(1).join(':').trim();
-        if (val) tp.push(val);
-      }
-    }
+  lines.forEach(line => {
 
-    const date = msg.date ? new Date(msg.date * 1000) : new Date();
-    const time = date.toLocaleTimeString('en-KE', {
-      hour: '2-digit',
-      minute: '2-digit',
-      hour12: true
-    });
+    if (/^ENTRY:/i.test(line))
+      entry = line.split(':')[1]?.trim();
 
-    return {
-      id: msg.message_id,
-      pair,
-      direction,
-      entry: entry || '—',
-      sl: sl || '—',
-      tp: tp.length ? tp.join(' | ') : '—',
-      status: 'active',
-      time
-    };
+    if (/^SL:/i.test(line))
+      sl = line.split(':')[1]?.trim();
+
+    if (/^TP1:/i.test(line))
+      tp1 = line.split(':')[1]?.trim();
+
+    if (/^TP2:/i.test(line))
+      tp2 = line.split(':')[1]?.trim();
+
+    if (/^TP3:/i.test(line))
+      tp3 = line.split(':')[1]?.trim();
+
+    if (/^TP4:/i.test(line))
+      tp4 = line.split(':')[1]?.trim();
+
+    if (/^TP5:/i.test(line))
+      tp5 = line.split(':')[1]?.trim();
+
+    if (/^TP6:/i.test(line))
+      tp6 = line.split(':')[1]?.trim();
+
+  });
+
+  return {
+    id: msg.message_id,
+    pair,
+    direction,
+    entry,
+    sl,
+    tp1,
+    tp2,
+    tp3,
+    tp4,
+    tp5,
+    tp6,
+    tp1Hit:false,
+    tp2Hit:false,
+    tp3Hit:false,
+    tp4Hit:false,
+    tp5Hit:false,
+    tp6Hit:false,
+    status:'active',
+    time:new Date(msg.date * 1000).toLocaleTimeString()
+  };
+}
+
+function processTpReply(msg) {
+
+  if (!msg.reply_to_message) return;
+
+  const replyId = msg.reply_to_message.message_id;
+  const text = msg.text.toUpperCase();
+
+  const signal = allSignals.find(s => s.id === replyId);
+
+  if (!signal) return;
+
+  if (text.includes('TP1 HIT')) signal.tp1Hit = true;
+  if (text.includes('TP2 HIT')) signal.tp2Hit = true;
+  if (text.includes('TP3 HIT')) signal.tp3Hit = true;
+  if (text.includes('TP4 HIT')) signal.tp4Hit = true;
+  if (text.includes('TP5 HIT')) signal.tp5Hit = true;
+  if (text.includes('TP6 HIT')) signal.tp6Hit = true;
+
+  if (
+    (!signal.tp1 || signal.tp1Hit) &&
+    (!signal.tp2 || signal.tp2Hit) &&
+    (!signal.tp3 || signal.tp3Hit) &&
+    (!signal.tp4 || signal.tp4Hit) &&
+    (!signal.tp5 || signal.tp5Hit) &&
+    (!signal.tp6 || signal.tp6Hit)
+  ) {
+    signal.status = 'closed';
+  }
+}
+
+function tpLine(value, hit) {
+
+  if (!value) return '';
+
+  return `
+    <div class="signal-level-val ${hit ? 'tp-hit' : 'tp'}">
+      ${value} ${hit ? '✅' : ''}
+    </div>
+  `;
+}
+
+function renderSignals() {
+
+  const grid = document.getElementById('signalsGrid');
+
+  if (!allSignals.length) {
+    grid.innerHTML =
+      '<div class="no-signals">No signals yet</div>';
+    return;
   }
 
-  function renderSignals() {
-    const grid = document.getElementById('signalsGrid');
+  grid.innerHTML = allSignals.map(s => `
 
-    if (!allSignals.length) {
-      grid.innerHTML = '<div class="no-signals">No signals yet</div>';
-      return;
-    }
+    <div class="signal-card">
 
-    grid.innerHTML = allSignals.map(s => `
-      <div class="signal-card">
-        <div class="signal-top">
-          <div class="signal-pair">${s.pair}</div>
-          <div class="signal-direction ${s.direction}">${s.direction.toUpperCase()}</div>
-        </div>
-
-        <div class="signal-levels">
-          <div>
-            <div class="signal-level-label">Entry</div>
-            <div class="signal-level-val">${s.entry}</div>
-          </div>
-
-          <div>
-            <div class="signal-level-label">TP</div>
-            <div class="signal-level-val tp">${s.tp}</div>
-          </div>
-
-          <div>
-            <div class="signal-level-label">SL</div>
-            <div class="signal-level-val sl">${s.sl}</div>
-          </div>
-        </div>
-
-        <div class="signal-footer">
-          <span class="signal-session">${s.session || 'London'}</span>
-          <span class="signal-status active">ACTIVE</span>
-          <span class="signal-time">${s.time}</span>
+      <div class="signal-top">
+        <div class="signal-pair">${s.pair}</div>
+        <div class="signal-direction ${s.direction}">
+          ${s.direction.toUpperCase()}
         </div>
       </div>
-    `).join('');
+
+      <div class="signal-levels">
+
+        <div>
+          <div class="signal-level-label">ENTRY</div>
+          <div class="signal-level-val">${s.entry}</div>
+        </div>
+
+        <div>
+          <div class="signal-level-label">STOP LOSS</div>
+          <div class="signal-level-val sl">${s.sl}</div>
+        </div>
+
+      </div>
+
+      ${tpLine(s.tp1,s.tp1Hit)}
+      ${tpLine(s.tp2,s.tp2Hit)}
+      ${tpLine(s.tp3,s.tp3Hit)}
+      ${tpLine(s.tp4,s.tp4Hit)}
+      ${tpLine(s.tp5,s.tp5Hit)}
+      ${tpLine(s.tp6,s.tp6Hit)}
+
+      <div class="signal-footer">
+        <span class="signal-status ${s.status}">
+          ${s.status.toUpperCase()}
+        </span>
+        <span>${s.time}</span>
+      </div>
+
+    </div>
+
+  `).join('');
+}
+
+async function fetchSignals() {
+
+  try {
+
+    const res = await fetch(
+      `https://api.telegram.org/bot${BOT_TOKEN}/getUpdates`
+    );
+
+    const data = await res.json();
+
+    if (!data.ok) return;
+
+    allSignals = [];
+
+    const updates = data.result || [];
+
+    updates.forEach(update => {
+
+      const msg = update.channel_post;
+
+      if (!msg) return;
+
+      const signal = parseSignal(msg);
+
+      if (signal)
+        allSignals.unshift(signal);
+
+    });
+
+    updates.forEach(update => {
+
+      const msg = update.channel_post;
+
+      if (!msg) return;
+
+      processTpReply(msg);
+
+    });
+
+    allSignals = allSignals.slice(0, MAX_SIGNALS);
+
+    renderSignals();
+
+  } catch(err) {
+    console.log(err);
   }
+}
 
-  async function fetchSignals() {
-    try {
-      const url = `https://api.telegram.org/bot${BOT_TOKEN}/getUpdates`;
-      const res = await fetch(url);
-      const data = await res.json();
-
-      if (!data.ok) return;
-
-      const updates = data.result || [];
-      const signals = [];
-
-      for (let update of updates) {
-        const msg = update.channel_post;
-        if (!msg) continue;
-
-        const signal = parseSignal(msg);
-        if (signal) signals.unshift(signal);
-      }
-
-      allSignals = signals.slice(0, MAX_SIGNALS);
-      renderSignals();
-
-      document.getElementById('refreshInfo').textContent =
-        `Updated: ${new Date().toLocaleTimeString()}`;
-
-    } catch (e) {
-      console.log(e);
-    }
-  }
-
-  fetchSignals();
-  setInterval(fetchSignals, 60000);
+fetchSignals();
+setInterval(fetchSignals,60000);
 </script>
 </body>
 </html>
