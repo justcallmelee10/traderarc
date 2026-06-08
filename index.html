@@ -422,53 +422,40 @@ Session: London</div>
 <script>
 const BOT_TOKEN = '8709177130:AAHF2LnJILRW8TLY6B0YxljjZtWveRmc9AA';
 const CHANNEL = '@leetraderarc';
+const MAX_SIGNALS = 10;
 
 let allSignals = [];
 
 function parseSignal(msg) {
   if (!msg || !msg.text) return null;
 
-  const text = msg.text.trim();
-  const lines = text.split('\n').map(x => x.trim());
+  const lines = msg.text.trim().split('\n').map(l => l.trim());
 
-  const firstLine = lines[0].toUpperCase();
-  const match = firstLine.match(/^([A-Z0-9]+)\s+(BUY|SELL)$/);
-
+  const first = (lines[0] || '').toUpperCase();
+  const match = first.match(/^([A-Z0-9]+)\s+(BUY|SELL)$/);
   if (!match) return null;
 
   const pair = match[1];
   const direction = match[2].toLowerCase();
 
-  let entry = '';
-  let sl = '';
+  let entry = '', sl = '';
 
-  let tp1 = '', tp2 = '', tp3 = '', tp4 = '', tp5 = '', tp6 = '';
+  let tp = {
+    tp1:'', tp2:'', tp3:'', tp4:'', tp5:'', tp6:''
+  };
 
-  lines.forEach(line => {
+  lines.forEach(l => {
+    const u = l.toUpperCase();
 
-    if (/^ENTRY:/i.test(line))
-      entry = line.split(':')[1]?.trim();
+    if (u.startsWith("ENTRY:")) entry = l.split(":")[1]?.trim();
+    if (u.startsWith("SL:")) sl = l.split(":")[1]?.trim();
 
-    if (/^SL:/i.test(line))
-      sl = line.split(':')[1]?.trim();
-
-    if (/^TP1:/i.test(line))
-      tp1 = line.split(':')[1]?.trim();
-
-    if (/^TP2:/i.test(line))
-      tp2 = line.split(':')[1]?.trim();
-
-    if (/^TP3:/i.test(line))
-      tp3 = line.split(':')[1]?.trim();
-
-    if (/^TP4:/i.test(line))
-      tp4 = line.split(':')[1]?.trim();
-
-    if (/^TP5:/i.test(line))
-      tp5 = line.split(':')[1]?.trim();
-
-    if (/^TP6:/i.test(line))
-      tp6 = line.split(':')[1]?.trim();
+    if (u.startsWith("TP1:")) tp.tp1 = l.split(":")[1]?.trim();
+    if (u.startsWith("TP2:")) tp.tp2 = l.split(":")[1]?.trim();
+    if (u.startsWith("TP3:")) tp.tp3 = l.split(":")[1]?.trim();
+    if (u.startsWith("TP4:")) tp.tp4 = l.split(":")[1]?.trim();
+    if (u.startsWith("TP5:")) tp.tp5 = l.split(":")[1]?.trim();
+    if (u.startsWith("TP6:")) tp.tp6 = l.split(":")[1]?.trim();
   });
 
   return {
@@ -477,7 +464,7 @@ function parseSignal(msg) {
     direction,
     entry,
     sl,
-    tp1, tp2, tp3, tp4, tp5, tp6,
+    ...tp,
 
     tp1Hit:false,
     tp2Hit:false,
@@ -486,108 +473,67 @@ function parseSignal(msg) {
     tp5Hit:false,
     tp6Hit:false,
 
-    slHit:false,
-    status:'active',
-    time:new Date(msg.date * 1000).toLocaleTimeString()
+    status:"active",
+    time:new Date(msg.date*1000).toLocaleTimeString()
   };
 }
 
 function processReplies(msg) {
   if (!msg.reply_to_message) return;
 
-  const replyId = msg.reply_to_message.message_id;
+  const id = msg.reply_to_message.message_id;
   const text = msg.text.toUpperCase();
 
-  const signal = allSignals.find(s => s.id === replyId);
-  if (!signal) return;
+  const s = allSignals.find(x => x.id === id);
+  if (!s) return;
 
-  // TP hits
-  if (text.includes('TP1 HIT')) signal.tp1Hit = true;
-  if (text.includes('TP2 HIT')) signal.tp2Hit = true;
-  if (text.includes('TP3 HIT')) signal.tp3Hit = true;
-  if (text.includes('TP4 HIT')) signal.tp4Hit = true;
-  if (text.includes('TP5 HIT')) signal.tp5Hit = true;
-  if (text.includes('TP6 HIT')) signal.tp6Hit = true;
+  if (text.includes("TP1 HIT")) s.tp1Hit = true;
+  if (text.includes("TP2 HIT")) s.tp2Hit = true;
+  if (text.includes("TP3 HIT")) s.tp3Hit = true;
+  if (text.includes("TP4 HIT")) s.tp4Hit = true;
+  if (text.includes("TP5 HIT")) s.tp5Hit = true;
+  if (text.includes("TP6 HIT")) s.tp6Hit = true;
 
-  // SL hit (NEW)
-  if (text.includes('SL HIT')) {
-    signal.slHit = true;
-    signal.status = 'slhit';
+  if (text.includes("SL HIT")) s.status = "sl-hit";
+
+  if (text.includes("CLOSE TRADE")) s.status = "closed";
+
+  if (text.includes("NEXT TRADE")) {
+    allSignals = allSignals.filter(x => x.id !== id);
   }
-
-  // close if all TPs done OR SL hit
-  if (signal.slHit) {
-    signal.status = 'slhit';
-  } else if (
-    (!signal.tp1 || signal.tp1Hit) &&
-    (!signal.tp2 || signal.tp2Hit) &&
-    (!signal.tp3 || signal.tp3Hit) &&
-    (!signal.tp4 || signal.tp4Hit) &&
-    (!signal.tp5 || signal.tp5Hit) &&
-    (!signal.tp6 || signal.tp6Hit)
-  ) {
-    signal.status = 'closed';
-  }
-}
-
-function tpLine(value, hit) {
-  if (!value) return '';
-
-  return `
-    <div class="signal-level-val ${hit ? 'tp-hit' : 'tp'}">
-      ${value} ${hit ? '✅' : ''}
-    </div>
-  `;
 }
 
 function renderSignals() {
-  const grid = document.getElementById('signalsGrid');
+  const grid = document.getElementById("signalsGrid");
 
   if (!allSignals.length) {
-    grid.innerHTML = '<div class="no-signals">No signals yet</div>';
+    grid.innerHTML = "<div>No signals yet</div>";
     return;
   }
 
   grid.innerHTML = allSignals.map(s => `
     <div class="signal-card">
 
-      <div class="signal-top">
-        <div class="signal-pair">${s.pair}</div>
-        <div class="signal-direction ${s.direction}">
-          ${s.direction.toUpperCase()}
-        </div>
+      <div class="pair ${s.direction}">
+        ${s.pair} (${s.direction.toUpperCase()})
       </div>
 
-      <div class="signal-levels">
+      <div>Entry: ${s.entry}</div>
+      <div>SL: ${s.sl}</div>
 
-        <div>
-          <div class="signal-level-label">ENTRY</div>
-          <div class="signal-level-val">${s.entry}</div>
-        </div>
+      <div>TP1: ${s.tp1} ${s.tp1Hit ? "✅" : ""}</div>
+      <div>TP2: ${s.tp2} ${s.tp2Hit ? "✅" : ""}</div>
+      <div>TP3: ${s.tp3} ${s.tp3Hit ? "✅" : ""}</div>
+      <div>TP4: ${s.tp4} ${s.tp4Hit ? "✅" : ""}</div>
+      <div>TP5: ${s.tp5} ${s.tp5Hit ? "✅" : ""}</div>
+      <div>TP6: ${s.tp6} ${s.tp6Hit ? "✅" : ""}</div>
 
-        <div>
-          <div class="signal-level-label">STOP LOSS</div>
-          <div class="signal-level-val sl">${s.sl}</div>
-        </div>
-
-      </div>
-
-      ${tpLine(s.tp1,s.tp1Hit)}
-      ${tpLine(s.tp2,s.tp2Hit)}
-      ${tpLine(s.tp3,s.tp3Hit)}
-      ${tpLine(s.tp4,s.tp4Hit)}
-      ${tpLine(s.tp5,s.tp5Hit)}
-      ${tpLine(s.tp6,s.tp6Hit)}
-
-      <div class="signal-footer">
-        <span class="signal-status ${s.status}">
-          ${s.status.toUpperCase()}
-        </span>
-        <span>${s.time}</span>
+      <div>
+        STATUS: ${s.status.toUpperCase()}
       </div>
 
     </div>
-  `).join('');
+  `).join("");
 }
 
 async function fetchSignals() {
@@ -597,33 +543,27 @@ async function fetchSignals() {
 
     if (!data.ok) return;
 
-    const updates = data.result || [];
-
     allSignals = [];
 
-    // signals
-    updates.forEach(update => {
-      const msg = update.channel_post;
-      if (!msg) return;
+    const updates = data.result || [];
 
-      const signal = parseSignal(msg);
-      if (signal) allSignals.unshift(signal);
+    updates.forEach(u => {
+      if (!u.channel_post) return;
+      const s = parseSignal(u.channel_post);
+      if (s) allSignals.unshift(s);
     });
 
-    // replies (TP / SL)
-    updates.forEach(update => {
-      const msg = update.channel_post;
-      if (!msg) return;
-
-      processReplies(msg);
+    updates.forEach(u => {
+      if (!u.channel_post) return;
+      processReplies(u.channel_post);
     });
 
     allSignals = allSignals.slice(0, MAX_SIGNALS);
 
     renderSignals();
 
-  } catch (err) {
-    console.log(err);
+  } catch(e) {
+    console.log(e);
   }
 }
 
