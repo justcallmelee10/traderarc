@@ -422,8 +422,6 @@ Session: London</div>
 <script>
 const BOT_TOKEN = '8709177130:AAHF2LnJILRW8TLY6B0YxljjZtWveRmc9AA';
 const CHANNEL = '@leetraderarc';
-const MAX_SIGNALS = 10;
-
 
 let allSignals = [];
 
@@ -444,12 +442,7 @@ function parseSignal(msg) {
   let entry = '';
   let sl = '';
 
-  let tp1 = '';
-  let tp2 = '';
-  let tp3 = '';
-  let tp4 = '';
-  let tp5 = '';
-  let tp6 = '';
+  let tp1 = '', tp2 = '', tp3 = '', tp4 = '', tp5 = '', tp6 = '';
 
   lines.forEach(line => {
 
@@ -476,7 +469,6 @@ function parseSignal(msg) {
 
     if (/^TP6:/i.test(line))
       tp6 = line.split(':')[1]?.trim();
-
   });
 
   return {
@@ -485,34 +477,31 @@ function parseSignal(msg) {
     direction,
     entry,
     sl,
-    tp1,
-    tp2,
-    tp3,
-    tp4,
-    tp5,
-    tp6,
+    tp1, tp2, tp3, tp4, tp5, tp6,
+
     tp1Hit:false,
     tp2Hit:false,
     tp3Hit:false,
     tp4Hit:false,
     tp5Hit:false,
     tp6Hit:false,
+
+    slHit:false,
     status:'active',
     time:new Date(msg.date * 1000).toLocaleTimeString()
   };
 }
 
-function processTpReply(msg) {
-
+function processReplies(msg) {
   if (!msg.reply_to_message) return;
 
   const replyId = msg.reply_to_message.message_id;
   const text = msg.text.toUpperCase();
 
   const signal = allSignals.find(s => s.id === replyId);
-
   if (!signal) return;
 
+  // TP hits
   if (text.includes('TP1 HIT')) signal.tp1Hit = true;
   if (text.includes('TP2 HIT')) signal.tp2Hit = true;
   if (text.includes('TP3 HIT')) signal.tp3Hit = true;
@@ -520,7 +509,16 @@ function processTpReply(msg) {
   if (text.includes('TP5 HIT')) signal.tp5Hit = true;
   if (text.includes('TP6 HIT')) signal.tp6Hit = true;
 
-  if (
+  // SL hit (NEW)
+  if (text.includes('SL HIT')) {
+    signal.slHit = true;
+    signal.status = 'slhit';
+  }
+
+  // close if all TPs done OR SL hit
+  if (signal.slHit) {
+    signal.status = 'slhit';
+  } else if (
     (!signal.tp1 || signal.tp1Hit) &&
     (!signal.tp2 || signal.tp2Hit) &&
     (!signal.tp3 || signal.tp3Hit) &&
@@ -533,7 +531,6 @@ function processTpReply(msg) {
 }
 
 function tpLine(value, hit) {
-
   if (!value) return '';
 
   return `
@@ -544,17 +541,14 @@ function tpLine(value, hit) {
 }
 
 function renderSignals() {
-
   const grid = document.getElementById('signalsGrid');
 
   if (!allSignals.length) {
-    grid.innerHTML =
-      '<div class="no-signals">No signals yet</div>';
+    grid.innerHTML = '<div class="no-signals">No signals yet</div>';
     return;
   }
 
   grid.innerHTML = allSignals.map(s => `
-
     <div class="signal-card">
 
       <div class="signal-top">
@@ -593,60 +587,48 @@ function renderSignals() {
       </div>
 
     </div>
-
   `).join('');
 }
 
 async function fetchSignals() {
-
   try {
-
-    const res = await fetch(
-      `https://api.telegram.org/bot${BOT_TOKEN}/getUpdates`
-    );
-
+    const res = await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/getUpdates`);
     const data = await res.json();
 
     if (!data.ok) return;
 
-    allSignals = [];
-
     const updates = data.result || [];
 
+    allSignals = [];
+
+    // signals
     updates.forEach(update => {
-
       const msg = update.channel_post;
-
       if (!msg) return;
 
       const signal = parseSignal(msg);
-
-      if (signal)
-        allSignals.unshift(signal);
-
+      if (signal) allSignals.unshift(signal);
     });
 
+    // replies (TP / SL)
     updates.forEach(update => {
-
       const msg = update.channel_post;
-
       if (!msg) return;
 
-      processTpReply(msg);
-
+      processReplies(msg);
     });
 
     allSignals = allSignals.slice(0, MAX_SIGNALS);
 
     renderSignals();
 
-  } catch(err) {
+  } catch (err) {
     console.log(err);
   }
 }
 
 fetchSignals();
-setInterval(fetchSignals,60000);
+setInterval(fetchSignals, 60000);
 </script>
 </body>
 </html>
