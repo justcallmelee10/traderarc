@@ -432,30 +432,31 @@ function parseSignal(msg) {
   const lines = msg.text.trim().split('\n').map(l => l.trim());
 
   const first = (lines[0] || '').toUpperCase();
-  const match = first.match(/^([A-Z0-9]+)\s+(BUY|SELL)$/);
+  const match = first.match(/^([A-Z0-9]+)\s+(BUY|SELL)/);
   if (!match) return null;
 
   const pair = match[1];
   const direction = match[2].toLowerCase();
 
-  let entry = '', sl = '';
+  let entry = '', sl = '', session = 'London';
+  let tps = [];
 
-  let tp = {
-    tp1:'', tp2:'', tp3:'', tp4:'', tp5:'', tp6:''
-  };
+  lines.forEach(line => {
+    const l = line.toLowerCase();
 
-  lines.forEach(l => {
-    const u = l.toUpperCase();
+    if (l.startsWith('entry:')) entry = line.split(':')[1]?.trim();
+    if (l.startsWith('sl:')) sl = line.split(':')[1]?.trim();
+    if (l.startsWith('session:')) session = line.split(':')[1]?.trim();
 
-    if (u.startsWith("ENTRY:")) entry = l.split(":")[1]?.trim();
-    if (u.startsWith("SL:")) sl = l.split(":")[1]?.trim();
+    if (l.startsWith('tp')) {
+      tps.push(line.split(':')[1]?.trim());
+    }
+  });
 
-    if (u.startsWith("TP1:")) tp.tp1 = l.split(":")[1]?.trim();
-    if (u.startsWith("TP2:")) tp.tp2 = l.split(":")[1]?.trim();
-    if (u.startsWith("TP3:")) tp.tp3 = l.split(":")[1]?.trim();
-    if (u.startsWith("TP4:")) tp.tp4 = l.split(":")[1]?.trim();
-    if (u.startsWith("TP5:")) tp.tp5 = l.split(":")[1]?.trim();
-    if (u.startsWith("TP6:")) tp.tp6 = l.split(":")[1]?.trim();
+  const date = msg.date ? new Date(msg.date * 1000) : new Date();
+  const time = date.toLocaleTimeString('en-KE', {
+    hour: '2-digit',
+    minute: '2-digit'
   });
 
   return {
@@ -464,76 +465,86 @@ function parseSignal(msg) {
     direction,
     entry,
     sl,
-    ...tp,
+    session,
+    tps,
+    status: "active",
+    time,
 
-    tp1Hit:false,
-    tp2Hit:false,
-    tp3Hit:false,
-    tp4Hit:false,
-    tp5Hit:false,
-    tp6Hit:false,
-
-    status:"active",
-    time:new Date(msg.date*1000).toLocaleTimeString()
+    slHit: false,
+    closed: false
   };
 }
 
-function processReplies(msg) {
-  if (!msg.reply_to_message) return;
+/* =========================
+   COMMAND SYSTEM
+   ========================= */
+function processCommands(msg) {
+  if (!msg || !msg.reply_to_message) return;
 
-  const id = msg.reply_to_message.message_id;
-  const text = msg.text.toUpperCase();
+  const targetId = msg.reply_to_message.message_id;
+  const text = (msg.text || '').toUpperCase();
 
-  const s = allSignals.find(x => x.id === id);
-  if (!s) return;
+  const signal = allSignals.find(s => s.id === targetId);
+  if (!signal) return;
 
-  if (text.includes("TP1 HIT")) s.tp1Hit = true;
-  if (text.includes("TP2 HIT")) s.tp2Hit = true;
-  if (text.includes("TP3 HIT")) s.tp3Hit = true;
-  if (text.includes("TP4 HIT")) s.tp4Hit = true;
-  if (text.includes("TP5 HIT")) s.tp5Hit = true;
-  if (text.includes("TP6 HIT")) s.tp6Hit = true;
+  if (text.includes("SL HIT")) {
+    signal.slHit = true;
+    signal.status = "sl-hit";
+  }
 
-  if (text.includes("SL HIT")) s.status = "sl-hit";
-
-  if (text.includes("CLOSE TRADE")) s.status = "closed";
+  if (text.includes("CLOSE TRADE")) {
+    signal.closed = true;
+    signal.status = "closed";
+  }
 
   if (text.includes("NEXT TRADE")) {
-    allSignals = allSignals.filter(x => x.id !== id);
+    allSignals = allSignals.filter(s => s.id !== targetId);
   }
 }
 
 function renderSignals() {
-  const grid = document.getElementById("signalsGrid");
+  const grid = document.getElementById('signalsGrid');
 
-  if (!allSignals.length) {
-    grid.innerHTML = "<div>No signals yet</div>";
+  const latest = allSignals.slice(0, 10);
+
+  if (!latest.length) {
+    grid.innerHTML = `<div class="no-signals">No signals yet</div>`;
     return;
   }
 
-  grid.innerHTML = allSignals.map(s => `
-    <div class="signal-card">
+  grid.innerHTML = latest.map(s => {
+    const tpHtml = (s.tps || [])
+      .map((tp, i) => `TP${i + 1}: ${tp}`)
+      .join('<br>');
 
-      <div class="pair ${s.direction}">
-        ${s.pair} (${s.direction.toUpperCase()})
+    return `
+      <div class="signal-card">
+
+        <div class="signal-top">
+          <div class="signal-pair">${s.pair}</div>
+          <div class="signal-direction ${s.direction}">
+            ${s.direction.toUpperCase()}
+          </div>
+        </div>
+
+        <div class="signal-levels">
+          <div>Entry: ${s.entry}</div>
+          <div>SL: ${s.sl}</div>
+        </div>
+
+        <div style="margin-top:10px;font-family:monospace;font-size:12px;">
+          ${tpHtml}
+        </div>
+
+        <div class="signal-footer">
+          <span>${s.session}</span>
+          <span>${s.status}</span>
+          <span>${s.time}</span>
+        </div>
+
       </div>
-
-      <div>Entry: ${s.entry}</div>
-      <div>SL: ${s.sl}</div>
-
-      <div>TP1: ${s.tp1} ${s.tp1Hit ? "✅" : ""}</div>
-      <div>TP2: ${s.tp2} ${s.tp2Hit ? "✅" : ""}</div>
-      <div>TP3: ${s.tp3} ${s.tp3Hit ? "✅" : ""}</div>
-      <div>TP4: ${s.tp4} ${s.tp4Hit ? "✅" : ""}</div>
-      <div>TP5: ${s.tp5} ${s.tp5Hit ? "✅" : ""}</div>
-      <div>TP6: ${s.tp6} ${s.tp6Hit ? "✅" : ""}</div>
-
-      <div>
-        STATUS: ${s.status.toUpperCase()}
-      </div>
-
-    </div>
-  `).join("");
+    `;
+  }).join('');
 }
 
 async function fetchSignals() {
@@ -543,26 +554,23 @@ async function fetchSignals() {
 
     if (!data.ok) return;
 
-    allSignals = [];
+    let signals = [];
 
-    const updates = data.result || [];
-
-    updates.forEach(u => {
-      if (!u.channel_post) return;
-      const s = parseSignal(u.channel_post);
-      if (s) allSignals.unshift(s);
+    data.result.forEach(u => {
+      const msg = u.channel_post || u.message;
+      const sig = parseSignal(msg);
+      if (sig) signals.unshift(sig);
     });
 
-    updates.forEach(u => {
-      if (!u.channel_post) return;
-      processReplies(u.channel_post);
+    data.result.forEach(u => {
+      const msg = u.channel_post || u.message;
+      processCommands(msg);
     });
 
-    allSignals = allSignals.slice(0, MAX_SIGNALS);
-
+    allSignals = signals;
     renderSignals();
 
-  } catch(e) {
+  } catch (e) {
     console.log(e);
   }
 }
