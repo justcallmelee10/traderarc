@@ -5,2077 +5,407 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="google-site-verification" content="RZZdnq1qqcjyRg8_Uqbxfqarg4uAJDHK5InVQBBt1x4" />
   <meta name="description" content="TraderArc — Daily Forex signals across Asian, London and New York sessions. VIP setups, account management and private mentorship." />
-  <meta name="keywords" content="forex signals, trading signals, VIP forex, account management, XAUUSD, TraderArc, Kenya forex" />
   <title>TraderArc — Precision Trading Signals</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css" />
   <style>
-    :root {
-      --black: #080a0e;
-      --deep: #0c0f15;
-      --card: #111520;
-      --border: #1e2535;
-      --gold: #c9a84c;
-      --gold-light: #e8c96a;
-      --gold-dim: rgba(201,168,76,0.12);
-      --green: #00e676;
-      --red: #ff4d6a;
-      --text: #e8eaf0;
-      --muted: #6b7490;
-      --white: #ffffff;
-    }
-
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-
-    html { scroll-behavior: smooth; }
-
-    body {
-      background: var(--black);
-      color: var(--text);
-      font-family: 'DM Sans', sans-serif;
-      font-weight: 300;
-      overflow-x: hidden;
-    }
-
-    /* GRAIN OVERLAY */
-    body::before {
-      content: '';
-      position: fixed;
-      inset: 0;
-      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
-      pointer-events: none;
-      z-index: 9999;
-      opacity: 0.4;
-    }
-
-    /* NAV */
-    nav {
-      position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
-      z-index: 100;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 20px 48px;
-      background: rgba(8,10,14,0.85);
-      backdrop-filter: blur(20px);
-      border-bottom: 1px solid var(--border);
-    }
-
-    .nav-logo {
-      font-family: 'Bebas Neue', sans-serif;
-      font-size: 28px;
-      letter-spacing: 3px;
-      color: var(--gold);
-      text-decoration: none;
-    }
-
-    .nav-logo span { color: var(--white); }
-
-    .nav-links {
-      display: flex;
-      gap: 36px;
-      list-style: none;
-    }
-
-    .nav-links a {
-      color: var(--muted);
-      text-decoration: none;
-      font-size: 13px;
-      font-weight: 500;
-      letter-spacing: 1.5px;
-      text-transform: uppercase;
-      transition: color 0.2s;
-    }
-
-    .nav-links a:hover { color: var(--gold); }
-
-    .nav-cta {
-      background: var(--gold);
-      color: var(--black) !important;
-      padding: 10px 24px;
-      border-radius: 2px;
-      font-weight: 600 !important;
-      letter-spacing: 1px !important;
-    }
-
-    .nav-cta:hover { background: var(--gold-light) !important; color: var(--black) !important; }
-
-    /* HERO */
+    /* ---- HERO ---- */
     .hero {
-      min-height: 100vh;
+      min-height: calc(100vh - 64px);
       display: flex;
       flex-direction: column;
       justify-content: center;
-      padding: 120px 48px 80px;
+      padding: 80px 48px 100px;
       position: relative;
       overflow: hidden;
     }
 
     .hero-grid {
-      position: absolute;
-      inset: 0;
+      position: absolute; inset: 0;
       background-image:
-        linear-gradient(rgba(201,168,76,0.03) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(201,168,76,0.03) 1px, transparent 1px);
-      background-size: 60px 60px;
-    }
-
-    .hero-glow {
-      position: absolute;
-      top: -200px;
-      right: -200px;
-      width: 700px;
-      height: 700px;
-      background: radial-gradient(circle, rgba(201,168,76,0.08) 0%, transparent 70%);
+        linear-gradient(rgba(200,164,74,0.025) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(200,164,74,0.025) 1px, transparent 1px);
+      background-size: 64px 64px;
       pointer-events: none;
     }
 
-    .hero-tag {
+    .hero-glow {
+      position: absolute; top: -20%; right: -10%;
+      width: 60vw; height: 60vw;
+      background: radial-gradient(circle, rgba(200,164,74,0.055) 0%, transparent 65%);
+      pointer-events: none;
+    }
+
+    .hero-eyebrow {
       font-family: 'DM Mono', monospace;
-      font-size: 11px;
-      letter-spacing: 3px;
-      color: var(--gold);
-      text-transform: uppercase;
-      margin-bottom: 24px;
-      opacity: 0;
-      animation: fadeUp 0.8s forwards 0.2s;
+      font-size: 10px; letter-spacing: 4px;
+      color: var(--gold); text-transform: uppercase;
+      margin-bottom: 20px;
+      display: flex; align-items: center; gap: 12px;
+    }
+
+    .hero-eyebrow::before {
+      content: ''; display: block;
+      width: 32px; height: 1px; background: var(--gold); opacity: 0.5;
     }
 
     .hero h1 {
       font-family: 'Bebas Neue', sans-serif;
-      font-size: clamp(72px, 10vw, 140px);
-      line-height: 0.9;
-      letter-spacing: 4px;
+      font-size: clamp(80px, 12vw, 160px);
+      line-height: 0.88;
+      letter-spacing: 2px;
       color: var(--white);
-      opacity: 0;
-      animation: fadeUp 0.8s forwards 0.4s;
     }
 
-    .hero h1 .gold { color: var(--gold); }
+    .hero h1 .accent {
+      color: transparent;
+      -webkit-text-stroke: 1px var(--gold);
+    }
 
     .hero-sub {
-      font-size: 17px;
-      color: var(--muted);
-      margin-top: 28px;
-      max-width: 480px;
-      line-height: 1.7;
-      font-weight: 300;
-      opacity: 0;
-      animation: fadeUp 0.8s forwards 0.6s;
+      font-size: 16px; color: var(--muted);
+      margin-top: 28px; max-width: 460px;
+      line-height: 1.8; font-weight: 300;
     }
 
     .hero-sessions {
-      display: flex;
-      gap: 12px;
-      margin-top: 40px;
-      flex-wrap: wrap;
-      opacity: 0;
-      animation: fadeUp 0.8s forwards 0.8s;
+      display: flex; gap: 10px;
+      margin-top: 36px; flex-wrap: wrap;
     }
 
-    .session-pill {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      padding: 8px 18px;
+    .session-tag {
+      display: flex; align-items: center; gap: 7px;
+      padding: 7px 16px;
       border: 1px solid var(--border);
       border-radius: 2px;
       font-family: 'DM Mono', monospace;
-      font-size: 12px;
-      letter-spacing: 1px;
-      color: var(--muted);
-      background: var(--deep);
+      font-size: 11px; letter-spacing: 1.5px;
+      color: var(--muted); background: var(--deep);
+      transition: border-color 0.2s, color 0.2s;
     }
 
-    .session-pill .dot {
-      width: 6px;
-      height: 6px;
-      border-radius: 50%;
-      background: var(--green);
-      animation: pulse 2s infinite;
+    .session-tag.live { border-color: rgba(0,230,118,0.3); color: var(--text); }
+
+    .session-dot {
+      width: 5px; height: 5px; border-radius: 50%;
+      background: var(--muted2); flex-shrink: 0;
     }
 
-    .hero-btns {
-      display: flex;
-      gap: 16px;
-      margin-top: 40px;
-      flex-wrap: wrap;
-      opacity: 0;
-      animation: fadeUp 0.8s forwards 1s;
-    }
-
-    .btn-primary {
-      background: var(--gold);
-      color: var(--black);
-      padding: 14px 32px;
-      font-size: 13px;
-      font-weight: 600;
-      letter-spacing: 2px;
-      text-transform: uppercase;
-      text-decoration: none;
-      border-radius: 2px;
-      transition: all 0.2s;
-      border: none;
-      cursor: pointer;
-    }
-
-    .btn-primary:hover { background: var(--gold-light); transform: translateY(-2px); }
-
-    .btn-outline {
-      background: transparent;
-      color: var(--text);
-      padding: 14px 32px;
-      font-size: 13px;
-      font-weight: 500;
-      letter-spacing: 2px;
-      text-transform: uppercase;
-      text-decoration: none;
-      border-radius: 2px;
-      border: 1px solid var(--border);
-      transition: all 0.2s;
-      cursor: pointer;
-    }
-
-    .btn-outline:hover { border-color: var(--gold); color: var(--gold); }
-
-    /* TICKER */
-    .ticker {
-      background: var(--deep);
-      border-top: 1px solid var(--border);
-      border-bottom: 1px solid var(--border);
-      padding: 14px 0;
-      overflow: hidden;
-      position: relative;
-    }
-
-    .ticker-track {
-      display: flex;
-      gap: 60px;
-      animation: ticker 25s linear infinite;
-      white-space: nowrap;
-      width: max-content;
-    }
-
-    .ticker-item {
-      font-family: 'DM Mono', monospace;
-      font-size: 12px;
-      color: var(--muted);
-      letter-spacing: 1px;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-
-    .ticker-item .up { color: var(--green); }
-    .ticker-item .down { color: var(--red); }
-
-    /* STATS */
-    .stats {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      border-bottom: 1px solid var(--border);
-    }
-
-    .stat {
-      padding: 48px 40px;
-      border-right: 1px solid var(--border);
-      position: relative;
-      overflow: hidden;
-    }
-
-    .stat:last-child { border-right: none; }
-
-    .stat::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      height: 2px;
-      background: linear-gradient(90deg, var(--gold), transparent);
-      opacity: 0;
-      transition: opacity 0.3s;
-    }
-
-    .stat:hover::before { opacity: 1; }
-
-    .stat-num {
-      font-family: 'Bebas Neue', sans-serif;
-      font-size: 52px;
-      color: var(--gold);
-      line-height: 1;
-      letter-spacing: 2px;
-    }
-
-    .stat-label {
-      font-size: 12px;
-      color: var(--muted);
-      letter-spacing: 2px;
-      text-transform: uppercase;
-      margin-top: 8px;
-      font-weight: 500;
-    }
-
-    /* SECTIONS */
-    section { padding: 100px 48px; }
-
-    .section-tag {
-      font-family: 'DM Mono', monospace;
-      font-size: 11px;
-      letter-spacing: 3px;
-      color: var(--gold);
-      text-transform: uppercase;
-      margin-bottom: 16px;
-    }
-
-    .section-title {
-      font-family: 'Bebas Neue', sans-serif;
-      font-size: clamp(40px, 5vw, 64px);
-      letter-spacing: 3px;
-      color: var(--white);
-      line-height: 1;
-      margin-bottom: 20px;
-    }
-
-    .section-sub {
-      font-size: 16px;
-      color: var(--muted);
-      max-width: 520px;
-      line-height: 1.8;
-    }
-
-    /* SIGNALS SECTION */
-    .signals-section { background: var(--deep); border-top: 1px solid var(--border); }
-
-    .signals-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-end;
-      margin-bottom: 48px;
-      flex-wrap: wrap;
-      gap: 20px;
-    }
-
-    .live-badge {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      background: rgba(0,230,118,0.08);
-      border: 1px solid rgba(0,230,118,0.2);
-      padding: 8px 16px;
-      border-radius: 2px;
-      font-family: 'DM Mono', monospace;
-      font-size: 11px;
-      letter-spacing: 2px;
-      color: var(--green);
-      text-transform: uppercase;
-    }
-
-    .live-dot {
-      width: 6px;
-      height: 6px;
-      border-radius: 50%;
+    .session-tag.live .session-dot {
       background: var(--green);
       animation: pulse 1.5s infinite;
     }
 
-    .signals-grid {
+    .hero-actions { display: flex; gap: 14px; margin-top: 40px; flex-wrap: wrap; }
+
+    /* ---- STATS BAR ---- */
+    .stats-bar {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+      grid-template-columns: repeat(4, 1fr);
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .stat-cell {
+      padding: 40px 36px;
+      border-right: 1px solid var(--border);
+      position: relative; overflow: hidden;
+    }
+
+    .stat-cell:last-child { border-right: none; }
+
+    .stat-cell::before {
+      content: ''; position: absolute;
+      top: 0; left: 0; right: 0; height: 2px;
+      background: linear-gradient(90deg, var(--gold), transparent);
+      transform: scaleX(0); transform-origin: left;
+      transition: transform 0.4s;
+    }
+
+    .stat-cell:hover::before { transform: scaleX(1); }
+
+    .stat-num {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 52px; letter-spacing: 2px;
+      color: var(--gold); line-height: 1;
+    }
+
+    .stat-label {
+      font-size: 11px; color: var(--muted);
+      letter-spacing: 2px; text-transform: uppercase;
+      margin-top: 6px; font-weight: 500;
+    }
+
+    /* ---- PREVIEW SIGNALS ---- */
+    .preview-section {
+      padding: 80px 48px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .preview-header {
+      display: flex; justify-content: space-between;
+      align-items: flex-end; margin-bottom: 40px;
+      flex-wrap: wrap; gap: 16px;
+    }
+
+    .signals-preview-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
       gap: 1px;
       background: var(--border);
       border: 1px solid var(--border);
     }
 
-    .signal-card {
-      background: var(--card);
-      padding: 28px;
-      transition: background 0.2s;
-      position: relative;
-    }
-
-    .signal-card:hover { background: #161b28; }
-
-    .signal-top {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 20px;
-    }
-
-    .signal-pair {
-      font-family: 'Bebas Neue', sans-serif;
-      font-size: 28px;
-      letter-spacing: 2px;
-      color: var(--white);
-    }
-
-    .signal-direction {
-      padding: 6px 14px;
-      border-radius: 2px;
-      font-family: 'DM Mono', monospace;
-      font-size: 12px;
-      font-weight: 500;
-      letter-spacing: 1px;
-      text-transform: uppercase;
-    }
-
-    .signal-direction.buy { background: rgba(0,230,118,0.12); color: var(--green); border: 1px solid rgba(0,230,118,0.25); }
-    .signal-direction.sell { background: rgba(255,77,106,0.12); color: var(--red); border: 1px solid rgba(255,77,106,0.25); }
-
-    .signal-levels {
-      display: grid;
-      grid-template-columns: 1fr 1fr 1fr;
-      gap: 12px;
-      margin-bottom: 20px;
-    }
-
-    .signal-level-item { }
-
-    .signal-level-label {
-      font-size: 10px;
-      letter-spacing: 2px;
-      text-transform: uppercase;
-      color: var(--muted);
-      margin-bottom: 4px;
-    }
-
-    .signal-level-val {
-      font-family: 'DM Mono', monospace;
-      font-size: 15px;
-      color: var(--text);
-    }
-
-    .signal-level-val.tp { color: var(--green); }
-    .signal-level-val.sl { color: var(--red); }
-
-    .signal-footer {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding-top: 16px;
-      border-top: 1px solid var(--border);
-    }
-
-    .signal-session {
-      font-size: 11px;
-      letter-spacing: 1.5px;
-      text-transform: uppercase;
-      color: var(--muted);
-      font-weight: 500;
-    }
-
-    .signal-time {
-      font-family: 'DM Mono', monospace;
-      font-size: 11px;
-      color: var(--muted);
-    }
-
-    .signal-status {
-      font-size: 10px;
-      letter-spacing: 1.5px;
-      text-transform: uppercase;
-      padding: 4px 10px;
-      border-radius: 2px;
-    }
-
-    .signal-status.active { background: rgba(0,230,118,0.1); color: var(--green); }
-    .signal-status.closed { background: rgba(107,116,144,0.1); color: var(--muted); }
-    .signal-status.hit { background: rgba(201,168,76,0.1); color: var(--gold); }
-
-    .no-signals {
+    .no-signals-msg {
       grid-column: 1/-1;
-      padding: 80px 40px;
+      padding: 64px 32px;
       text-align: center;
-      color: var(--muted);
       font-family: 'DM Mono', monospace;
-      font-size: 13px;
-      letter-spacing: 2px;
+      font-size: 12px; letter-spacing: 2px;
+      color: var(--muted2);
     }
 
-    /* PLANS */
-    .plans-grid {
+    /* ---- WHY TRADERARC ---- */
+    .why-section {
+      padding: 80px 48px;
+      border-bottom: 1px solid var(--border);
+      background: var(--deep);
+    }
+
+    .why-grid {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
       gap: 1px;
       background: var(--border);
       border: 1px solid var(--border);
-      margin-top: 60px;
-    }
-
-    .plan-card {
-      background: var(--card);
-      padding: 40px 36px;
-      position: relative;
-      transition: background 0.2s;
-    }
-
-    .plan-card:hover { background: #161b28; }
-
-    .plan-card.featured {
-      background: linear-gradient(160deg, #131a26 0%, #0e1520 100%);
-      border-top: 2px solid var(--gold);
-    }
-
-    .plan-featured-tag {
-      position: absolute;
-      top: -1px;
-      right: 32px;
-      background: var(--gold);
-      color: var(--black);
-      font-size: 10px;
-      font-weight: 700;
-      letter-spacing: 2px;
-      text-transform: uppercase;
-      padding: 5px 14px;
-    }
-
-    .plan-name {
-      font-family: 'DM Mono', monospace;
-      font-size: 11px;
-      letter-spacing: 3px;
-      text-transform: uppercase;
-      color: var(--muted);
-      margin-bottom: 16px;
-    }
-
-    .plan-price {
-      font-family: 'Bebas Neue', sans-serif;
-      font-size: 56px;
-      color: var(--white);
-      letter-spacing: 2px;
-      line-height: 1;
-    }
-
-    .plan-price span {
-      font-size: 20px;
-      color: var(--muted);
-      font-family: 'DM Sans', sans-serif;
-      font-weight: 300;
-    }
-
-    .plan-price.gold-price { color: var(--gold); }
-
-    .plan-divider {
-      height: 1px;
-      background: var(--border);
-      margin: 28px 0;
-    }
-
-    .plan-features {
-      list-style: none;
-      display: flex;
-      flex-direction: column;
-      gap: 14px;
-      margin-bottom: 36px;
-    }
-
-    .plan-features li {
-      display: flex;
-      align-items: flex-start;
-      gap: 12px;
-      font-size: 14px;
-      color: var(--muted);
-      line-height: 1.5;
-    }
-
-    .plan-features li .check {
-      color: var(--gold);
-      font-size: 14px;
-      margin-top: 1px;
-      flex-shrink: 0;
-    }
-
-    .plan-btn {
-      display: block;
-      text-align: center;
-      padding: 14px;
-      font-size: 12px;
-      font-weight: 600;
-      letter-spacing: 2px;
-      text-transform: uppercase;
-      text-decoration: none;
-      border-radius: 2px;
-      transition: all 0.2s;
-      cursor: pointer;
-      border: none;
-      width: 100%;
-    }
-
-    .plan-btn.gold-btn {
-      background: var(--gold);
-      color: var(--black);
-    }
-
-    .plan-btn.gold-btn:hover { background: var(--gold-light); }
-
-    .plan-btn.outline-btn {
-      background: transparent;
-      color: var(--text);
-      border: 1px solid var(--border);
-    }
-
-    .plan-btn.outline-btn:hover { border-color: var(--gold); color: var(--gold); }
-
-    /* ACCOUNT MANAGEMENT */
-    .mgmt-section { border-top: 1px solid var(--border); }
-
-    .mgmt-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 1px;
-      background: var(--border);
-      border: 1px solid var(--border);
-      margin-top: 60px;
-    }
-
-    .mgmt-card {
-      background: var(--card);
-      padding: 48px 40px;
-    }
-
-    .mgmt-num {
-      font-family: 'Bebas Neue', sans-serif;
-      font-size: 80px;
-      line-height: 1;
-      letter-spacing: 2px;
-    }
-
-    .mgmt-num.gold { color: var(--gold); }
-    .mgmt-num.dim { color: var(--muted); }
-
-    .mgmt-label {
-      font-size: 13px;
-      color: var(--muted);
-      letter-spacing: 1.5px;
-      text-transform: uppercase;
-      margin-top: 8px;
-      font-weight: 500;
-    }
-
-    .mgmt-desc {
-      font-size: 15px;
-      color: var(--muted);
-      line-height: 1.8;
-      margin-top: 20px;
-    }
-
-    /* CONTACT */
-    .contact-section {
-      background: var(--deep);
-      border-top: 1px solid var(--border);
-    }
-
-    .contact-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 80px;
-      margin-top: 60px;
-      align-items: start;
-    }
-
-    .contact-links {
-      display: flex;
-      flex-direction: column;
-      gap: 16px;
-      margin-top: 36px;
-    }
-
-    .contact-link {
-      display: flex;
-      align-items: center;
-      gap: 16px;
-      padding: 20px 24px;
-      background: var(--card);
-      border: 1px solid var(--border);
-      text-decoration: none;
-      border-radius: 2px;
-      transition: all 0.2s;
-      color: var(--text);
-    }
-
-    .contact-link:hover { border-color: var(--gold); background: #161b28; }
-
-    .contact-link-icon {
-      width: 40px;
-      height: 40px;
-      background: var(--gold-dim);
-      border-radius: 2px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 18px;
-      flex-shrink: 0;
-    }
-
-    .contact-link-info { }
-
-    .contact-link-label {
-      font-size: 11px;
-      letter-spacing: 2px;
-      text-transform: uppercase;
-      color: var(--muted);
-      margin-bottom: 4px;
-    }
-
-    .contact-link-val {
-      font-family: 'DM Mono', monospace;
-      font-size: 14px;
-      color: var(--text);
-    }
-
-    /* FORM */
-    .contact-form {
-      display: flex;
-      flex-direction: column;
-      gap: 16px;
-    }
-
-    .form-group {
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-    }
-
-    .form-label {
-      font-size: 11px;
-      letter-spacing: 2px;
-      text-transform: uppercase;
-      color: var(--muted);
-      font-weight: 500;
-    }
-
-    .form-input, .form-select, .form-textarea {
-      background: var(--card);
-      border: 1px solid var(--border);
-      color: var(--text);
-      padding: 14px 18px;
-      font-family: 'DM Sans', sans-serif;
-      font-size: 14px;
-      border-radius: 2px;
-      transition: border-color 0.2s;
-      outline: none;
-      width: 100%;
-    }
-
-    .form-input:focus, .form-select:focus, .form-textarea:focus {
-      border-color: var(--gold);
-    }
-
-    .form-select option { background: var(--card); }
-
-    .form-textarea { resize: vertical; min-height: 100px; }
-
-    .form-submit {
-      background: var(--gold);
-      color: var(--black);
-      padding: 16px;
-      font-size: 13px;
-      font-weight: 700;
-      letter-spacing: 2px;
-      text-transform: uppercase;
-      border: none;
-      border-radius: 2px;
-      cursor: pointer;
-      transition: all 0.2s;
-      margin-top: 8px;
-    }
-
-    .form-submit:hover { background: var(--gold-light); transform: translateY(-1px); }
-
-    .form-success {
-      display: none;
-      background: rgba(0,230,118,0.08);
-      border: 1px solid rgba(0,230,118,0.2);
-      padding: 16px 20px;
-      border-radius: 2px;
-      color: var(--green);
-      font-size: 13px;
-      letter-spacing: 1px;
-      text-align: center;
-    }
-
-    /* FOOTER */
-    footer {
-      padding: 40px 48px;
-      border-top: 1px solid var(--border);
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      flex-wrap: gap;
-      gap: 20px;
-    }
-
-    .footer-logo {
-      font-family: 'Bebas Neue', sans-serif;
-      font-size: 22px;
-      letter-spacing: 3px;
-      color: var(--gold);
-    }
-
-    .footer-text {
-      font-size: 12px;
-      color: var(--muted);
-      letter-spacing: 1px;
-    }
-
-    .footer-disclaimer {
-      font-size: 11px;
-      color: var(--muted);
-      opacity: 0.5;
-      max-width: 400px;
-      text-align: right;
-      line-height: 1.6;
-    }
-
-    /* ADMIN PANEL */
-    .admin-toggle {
-      position: fixed;
-      bottom: 28px;
-      right: 28px;
-      z-index: 200;
-      background: var(--gold);
-      color: var(--black);
-      border: none;
-      width: 52px;
-      height: 52px;
-      border-radius: 2px;
-      font-size: 20px;
-      cursor: pointer;
-      box-shadow: 0 8px 32px rgba(201,168,76,0.3);
-      transition: all 0.2s;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .admin-toggle:hover { background: var(--gold-light); transform: translateY(-2px); }
-
-    .admin-overlay {
-      display: none;
-      position: fixed;
-      inset: 0;
-      background: rgba(8,10,14,0.9);
-      z-index: 300;
-      backdrop-filter: blur(8px);
-      overflow-y: auto;
-    }
-
-    .admin-overlay.open { display: flex; align-items: flex-start; justify-content: center; padding: 40px 20px; }
-
-    .admin-panel {
-      background: var(--deep);
-      border: 1px solid var(--border);
-      width: 100%;
-      max-width: 680px;
-      border-radius: 4px;
-      overflow: hidden;
-    }
-
-    .admin-header {
-      padding: 24px 32px;
-      border-bottom: 1px solid var(--border);
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      background: var(--card);
-    }
-
-    .admin-title {
-      font-family: 'Bebas Neue', sans-serif;
-      font-size: 24px;
-      letter-spacing: 2px;
-      color: var(--gold);
-    }
-
-    .admin-close {
-      background: none;
-      border: none;
-      color: var(--muted);
-      font-size: 22px;
-      cursor: pointer;
-      padding: 4px;
-      line-height: 1;
-    }
-
-    .admin-close:hover { color: var(--text); }
-
-    .admin-body { padding: 32px; }
-
-    .admin-section-title {
-      font-family: 'DM Mono', monospace;
-      font-size: 11px;
-      letter-spacing: 3px;
-      text-transform: uppercase;
-      color: var(--gold);
-      margin-bottom: 20px;
-    }
-
-    .admin-form {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 14px;
-      margin-bottom: 24px;
-    }
-
-    .admin-form .full { grid-column: 1/-1; }
-
-    .admin-input, .admin-select {
-      background: var(--card);
-      border: 1px solid var(--border);
-      color: var(--text);
-      padding: 12px 16px;
-      font-family: 'DM Sans', sans-serif;
-      font-size: 13px;
-      border-radius: 2px;
-      outline: none;
-      width: 100%;
-      transition: border-color 0.2s;
-    }
-
-    .admin-input:focus, .admin-select:focus { border-color: var(--gold); }
-    .admin-select option { background: var(--card); }
-
-    .admin-submit {
-      background: var(--gold);
-      color: var(--black);
-      padding: 13px 28px;
-      font-size: 12px;
-      font-weight: 700;
-      letter-spacing: 2px;
-      text-transform: uppercase;
-      border: none;
-      border-radius: 2px;
-      cursor: pointer;
-      transition: all 0.2s;
-      width: 100%;
-    }
-
-    .admin-submit:hover { background: var(--gold-light); }
-
-    .admin-divider {
-      height: 1px;
-      background: var(--border);
-      margin: 28px 0;
-    }
-
-    .admin-signals-list {
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-      max-height: 320px;
-      overflow-y: auto;
-    }
-
-    .admin-signal-item {
-      background: var(--card);
-      border: 1px solid var(--border);
-      padding: 16px 18px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 12px;
-      border-radius: 2px;
-    }
-
-    .admin-signal-info {
-      display: flex;
-      align-items: center;
-      gap: 14px;
-      flex-wrap: wrap;
-    }
-
-    .admin-signal-pair {
-      font-family: 'Bebas Neue', sans-serif;
-      font-size: 20px;
-      color: var(--white);
-      letter-spacing: 1px;
-    }
-
-    .admin-signal-dir {
-      font-family: 'DM Mono', monospace;
-      font-size: 11px;
-      padding: 4px 10px;
-      border-radius: 2px;
-      text-transform: uppercase;
-    }
-
-    .admin-signal-dir.buy { background: rgba(0,230,118,0.1); color: var(--green); }
-    .admin-signal-dir.sell { background: rgba(255,77,106,0.1); color: var(--red); }
-
-    .admin-signal-meta {
-      font-family: 'DM Mono', monospace;
-      font-size: 11px;
-      color: var(--muted);
-    }
-
-    .admin-signal-actions {
-      display: flex;
-      gap: 8px;
-      flex-shrink: 0;
-    }
-
-    .admin-btn-small {
-      padding: 6px 12px;
-      font-size: 11px;
-      font-weight: 600;
-      letter-spacing: 1px;
-      text-transform: uppercase;
-      border-radius: 2px;
-      border: 1px solid var(--border);
-      cursor: pointer;
-      background: transparent;
-      color: var(--muted);
-      transition: all 0.2s;
-    }
-
-    .admin-btn-small:hover { border-color: var(--gold); color: var(--gold); }
-    .admin-btn-small.del:hover { border-color: var(--red); color: var(--red); }
-
-    .admin-login {
-      padding: 32px;
-    }
-
-    .admin-login-title {
-      font-family: 'Bebas Neue', sans-serif;
-      font-size: 28px;
-      letter-spacing: 2px;
-      color: var(--white);
-      margin-bottom: 24px;
-    }
-
-    .admin-login-input {
-      background: var(--card);
-      border: 1px solid var(--border);
-      color: var(--text);
-      padding: 14px 18px;
-      font-family: 'DM Sans', sans-serif;
-      font-size: 14px;
-      border-radius: 2px;
-      outline: none;
-      width: 100%;
-      margin-bottom: 12px;
-      transition: border-color 0.2s;
-    }
-
-    .admin-login-input:focus { border-color: var(--gold); }
-
-    .admin-login-err {
-      color: var(--red);
-      font-size: 12px;
-      margin-bottom: 12px;
-      display: none;
-    }
-
-    /* BROKERS */
-    .brokers-section { border-top: 1px solid var(--border); background: var(--black); }
-
-    .brokers-grid {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 1px;
-      background: var(--border);
-      border: 1px solid var(--border);
-      margin-top: 56px;
-    }
-
-    .broker-card {
-      background: var(--card);
-      padding: 48px 44px;
-      position: relative;
-      overflow: hidden;
-      transition: background 0.2s;
-    }
-
-    .broker-card:hover { background: #161b28; }
-
-    .broker-card::after {
-      content: '';
-      position: absolute;
-      bottom: 0; left: 0; right: 0;
-      height: 2px;
-      background: linear-gradient(90deg, var(--gold), transparent);
-      opacity: 0;
-      transition: opacity 0.3s;
-    }
-
-    .broker-card:hover::after { opacity: 1; }
-
-    .broker-badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      background: var(--gold-dim);
-      border: 1px solid rgba(201,168,76,0.2);
-      padding: 6px 14px;
-      border-radius: 2px;
-      font-family: 'DM Mono', monospace;
-      font-size: 10px;
-      letter-spacing: 2.5px;
-      color: var(--gold);
-      text-transform: uppercase;
-      margin-bottom: 24px;
-    }
-
-    .broker-name {
-      font-family: 'Bebas Neue', sans-serif;
-      font-size: 52px;
-      letter-spacing: 3px;
-      color: var(--white);
-      line-height: 1;
-      margin-bottom: 16px;
-    }
-
-    .broker-tagline {
-      font-size: 14px;
-      color: var(--muted);
-      line-height: 1.8;
-      margin-bottom: 32px;
-      max-width: 360px;
-    }
-
-    .broker-perks {
-      list-style: none;
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-      margin-bottom: 36px;
-    }
-
-    .broker-perks li {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      font-size: 13px;
-      color: var(--muted);
-    }
-
-    .broker-perks li::before { content: '◆'; color: var(--gold); font-size: 8px; flex-shrink: 0; }
-
-    .broker-cta {
-      display: inline-flex;
-      align-items: center;
-      gap: 10px;
-      background: var(--gold);
-      color: var(--black);
-      padding: 14px 28px;
-      font-size: 12px;
-      font-weight: 700;
-      letter-spacing: 2px;
-      text-transform: uppercase;
-      text-decoration: none;
-      border-radius: 2px;
-      transition: all 0.2s;
-    }
-
-    .broker-cta:hover { background: var(--gold-light); transform: translateY(-2px); }
-
-    .broker-note {
       margin-top: 48px;
-      padding: 22px 28px;
-      background: var(--gold-dim);
-      border: 1px solid rgba(201,168,76,0.15);
-      border-radius: 2px;
-      display: flex;
-      align-items: flex-start;
-      gap: 16px;
-      flex-wrap: wrap;
     }
 
-    .broker-note-icon { font-size: 22px; flex-shrink: 0; margin-top: 2px; }
-
-    .broker-note-text { font-size: 13px; color: var(--muted); line-height: 1.8; flex: 1; }
-    .broker-note-text strong { color: var(--gold); font-weight: 600; }
-
-    @media (max-width: 900px) {
-      .brokers-grid { grid-template-columns: 1fr; }
-      .broker-card { padding: 36px 24px; }
+    .why-card {
+      background: var(--card);
+      padding: 36px 32px;
+      transition: background 0.2s;
     }
 
-    /* ANIMATIONS */
-    @keyframes fadeUp {
-      from { opacity: 0; transform: translateY(24px); }
-      to { opacity: 1; transform: translateY(0); }
+    .why-card:hover { background: var(--card2); }
+
+    .why-icon {
+      font-size: 28px; margin-bottom: 18px;
+      display: block;
     }
 
-    @keyframes pulse {
-      0%, 100% { opacity: 1; }
-      50% { opacity: 0.3; }
+    .why-title {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 22px; letter-spacing: 2px;
+      color: var(--white); margin-bottom: 10px;
     }
 
-    @keyframes ticker {
-      from { transform: translateX(0); }
-      to { transform: translateX(-50%); }
+    .why-desc {
+      font-size: 13px; color: var(--muted);
+      line-height: 1.8;
     }
 
-    /* RESPONSIVE */
-    @media (max-width: 900px) {
-      nav { padding: 18px 24px; }
-      .nav-links { display: none; }
-      .hero { padding: 100px 24px 60px; }
-      section { padding: 70px 24px; }
-      .stats { grid-template-columns: repeat(2, 1fr); }
-      .stat { border-bottom: 1px solid var(--border); }
-      .plans-grid { grid-template-columns: 1fr; }
-      .mgmt-grid { grid-template-columns: 1fr; }
-      .contact-grid { grid-template-columns: 1fr; gap: 40px; }
-      footer { flex-direction: column; align-items: flex-start; }
-      .footer-disclaimer { text-align: left; }
-      .admin-form { grid-template-columns: 1fr; }
+    /* ---- CTA BANNER ---- */
+    .cta-banner {
+      padding: 80px 48px;
+      border-bottom: 1px solid var(--border);
+      display: flex; justify-content: space-between;
+      align-items: center; gap: 40px; flex-wrap: wrap;
+      position: relative; overflow: hidden;
+    }
+
+    .cta-banner::before {
+      content: '';
+      position: absolute; inset: 0;
+      background: linear-gradient(135deg, var(--gold-glow) 0%, transparent 60%);
+      pointer-events: none;
+    }
+
+    .cta-banner-text { max-width: 540px; }
+
+    .cta-banner-title {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: clamp(32px, 4vw, 52px);
+      letter-spacing: 2px; color: var(--white); line-height: 1.05;
+    }
+
+    .cta-banner-sub {
+      font-size: 15px; color: var(--muted);
+      margin-top: 12px; line-height: 1.7;
+    }
+
+    .cta-banner-actions { display: flex; gap: 12px; flex-wrap: wrap; }
+
+    @media (max-width: 768px) {
+      .hero { padding: 60px 20px 100px; }
+      .stats-bar { grid-template-columns: repeat(2, 1fr); }
+      .stat-cell { border-bottom: 1px solid var(--border); }
+      .preview-section, .why-section, .cta-banner { padding: 60px 20px; }
+      .why-grid { grid-template-columns: 1fr; }
+      .cta-banner { flex-direction: column; align-items: flex-start; }
     }
   </style>
 </head>
 <body>
 
-<!-- NAV -->
-<nav>
-  <a href="#" class="nav-logo">Trader<span>Arc</span></a>
-  <ul class="nav-links">
-    <li><a href="#signals">Signals</a></li>
-    <li><a href="#plans">Plans</a></li>
-    <li><a href="#management">Management</a></li>
-    <li><a href="#brokers">Brokers</a></li>
-    <li><a href="#contact">Contact</a></li>
-    <li><a href="https://t.me/justcallmelee10" target="_blank" class="nav-cta">Join Now</a></li>
-  </ul>
-</nav>
+<nav class="nav" id="mainNav"></nav>
 
-<!-- HERO -->
-<section class="hero">
-  <div class="hero-grid"></div>
-  <div class="hero-glow"></div>
-  <div class="hero-tag">// Precision. Consistency. Edge.</div>
-  <h1>Trade<br><span class="gold">Smarter.</span><br>Every Session.</h1>
-  <p class="hero-sub">TraderArc runs live across all three major sessions — daily, no gaps. Signals backed by structure, not guesswork.</p>
-  <div class="hero-sessions">
-    <div class="session-pill"><span class="dot"></span> Asian Session 🌏</div>
-    <div class="session-pill"><span class="dot"></span> London Session 🇬🇧</div>
-    <div class="session-pill"><span class="dot"></span> New York Session 🗽</div>
-  </div>
-  <div class="hero-btns">
-    <a href="#signals" class="btn-primary">View Live Signals</a>
-    <a href="#plans" class="btn-outline">See Plans</a>
-  </div>
-</section>
+<div class="page">
 
-<!-- TICKER -->
-<div class="ticker">
-  <div class="ticker-track" id="tickerTrack">
-    <span class="ticker-item">XAUUSD <span class="up">▲ 2,342.50</span></span>
-    <span class="ticker-item">EURUSD <span class="down">▼ 1.0821</span></span>
-    <span class="ticker-item">GBPUSD <span class="up">▲ 1.2654</span></span>
-    <span class="ticker-item">USDJPY <span class="up">▲ 157.34</span></span>
-    <span class="ticker-item">BTCUSD <span class="up">▲ 67,420</span></span>
-    <span class="ticker-item">NASDAQ <span class="down">▼ 17,842</span></span>
-    <span class="ticker-item">OIL <span class="down">▼ 78.24</span></span>
-    <span class="ticker-item">XAUUSD <span class="up">▲ 2,342.50</span></span>
-    <span class="ticker-item">EURUSD <span class="down">▼ 1.0821</span></span>
-    <span class="ticker-item">GBPUSD <span class="up">▲ 1.2654</span></span>
-    <span class="ticker-item">USDJPY <span class="up">▲ 157.34</span></span>
-    <span class="ticker-item">BTCUSD <span class="up">▲ 67,420</span></span>
-    <span class="ticker-item">NASDAQ <span class="down">▼ 17,842</span></span>
-    <span class="ticker-item">OIL <span class="down">▼ 78.24</span></span>
-  </div>
-</div>
+  <!-- HERO -->
+  <section class="hero">
+    <div class="hero-grid"></div>
+    <div class="hero-glow"></div>
+    <div class="hero-eyebrow fade-up delay-1">Live signals. Every session. Every day.</div>
+    <h1 class="fade-up delay-2">Trade<br><span class="accent">Sharp.</span><br>Always.</h1>
+    <p class="hero-sub fade-up delay-3">TraderArc runs live across all three major sessions — Asian, London, New York. No gaps. No guesswork. Just setups.</p>
 
-<!-- STATS -->
-<div class="stats">
-  <div class="stat">
-    <div class="stat-num">3+</div>
-    <div class="stat-label">Free Signals Daily</div>
-  </div>
-  <div class="stat">
-    <div class="stat-num">7</div>
-    <div class="stat-label">VIP Signals Daily</div>
-  </div>
-  <div class="stat">
-    <div class="stat-num">3</div>
-    <div class="stat-label">Sessions Covered</div>
-  </div>
-  <div class="stat">
-    <div class="stat-num">60%</div>
-    <div class="stat-label">Your Profit Share</div>
-  </div>
-</div>
-
-<!-- SIGNALS -->
-<section class="signals-section" id="signals">
-  <div class="signals-header">
-    <div>
-      <div class="section-tag">// Live Feed</div>
-      <div class="section-title">Active Signals</div>
-    </div>
-    <div class="live-badge"><span class="live-dot"></span> Live</div>
-  </div>
-  <div class="signals-grid" id="signalsGrid">
-    <div class="no-signals">No signals posted yet. Check back during session hours.</div>
-  </div>
-</section>
-
-<!-- PLANS -->
-<section id="plans">
-  <div class="section-tag">// Choose Your Level</div>
-  <div class="section-title">Membership Plans</div>
-  <p class="section-sub">Start free, upgrade when you're ready. Every level gets real analysis — not noise.</p>
-  <div class="plans-grid">
-    <div class="plan-card">
-      <div class="plan-name">Free</div>
-      <div class="plan-price">$0 <span>/ month</span></div>
-      <div class="plan-divider"></div>
-      <ul class="plan-features">
-        <li><span class="check">◆</span> 2–3 signals per day</li>
-        <li><span class="check">◆</span> Asian, London & NY sessions</li>
-        <li><span class="check">◆</span> Market news & key level updates</li>
-        <li><span class="check">◆</span> Community access</li>
-      </ul>
-      <a href="https://t.me/justcallmelee10" target="_blank" class="plan-btn outline-btn">Join Free</a>
-    </div>
-    <div class="plan-card featured">
-      <div class="plan-featured-tag">Most Popular</div>
-      <div class="plan-name">VIP</div>
-      <div class="plan-price gold-price">DM <span>for pricing</span></div>
-      <div class="plan-divider"></div>
-      <ul class="plan-features">
-        <li><span class="check">◆</span> 4–7 premium signals daily</li>
-        <li><span class="check">◆</span> Earlier, tighter entries</li>
-        <li><span class="check">◆</span> Weekly performance targets</li>
-        <li><span class="check">◆</span> Real-time market developments</li>
-        <li><span class="check">◆</span> Direct analyst access</li>
-        <li><span class="check">◆</span> Full trade breakdowns</li>
-      </ul>
-      <a href="https://wa.me/254756170816" target="_blank" class="plan-btn gold-btn">Get VIP Access</a>
-    </div>
-    <div class="plan-card">
-      <div class="plan-name">Mentorship</div>
-      <div class="plan-price">DM <span>us</span></div>
-      <div class="plan-divider"></div>
-      <ul class="plan-features">
-        <li><span class="check">◆</span> 1-on-1 private sessions</li>
-        <li><span class="check">◆</span> Tailored to your level</li>
-        <li><span class="check">◆</span> Chart reading & structure</li>
-        <li><span class="check">◆</span> Risk & psychology coaching</li>
-        <li><span class="check">◆</span> Session-based learning</li>
-      </ul>
-      <a href="https://wa.me/254756170816" target="_blank" class="plan-btn outline-btn">Inquire Now</a>
-    </div>
-  </div>
-</section>
-
-<!-- ACCOUNT MANAGEMENT -->
-<section class="mgmt-section" id="management">
-  <div class="section-tag">// Hands-Off Trading</div>
-  <div class="section-title">Account Management</div>
-  <p class="section-sub">Not ready to trade yourself? We manage your capital — you keep the majority of the profits. No retainers. No upfront fees.</p>
-  <div class="mgmt-grid">
-    <div class="mgmt-card">
-      <div class="mgmt-num gold">60%</div>
-      <div class="mgmt-label">Your Profit Share</div>
-      <p class="mgmt-desc">You keep 60% of all profits generated on your account. We take 40% — only when we perform. If we don't win, we don't earn. Simple.</p>
-    </div>
-    <div class="mgmt-card">
-      <div class="mgmt-num dim">$0</div>
-      <div class="mgmt-label">Upfront Fees</div>
-      <p class="mgmt-desc">Zero retainers. Zero monthly charges. Your capital stays yours — we only participate in the growth. Built on trust and results, nothing else.</p>
-    </div>
-  </div>
-  <div style="margin-top: 24px; text-align: center;">
-    <a href="https://wa.me/254756170816" target="_blank" class="btn-primary" style="display:inline-block; text-decoration:none;">Inquire About Management</a>
-  </div>
-</section>
-
-<!-- BROKERS -->
-<section class="brokers-section" id="brokers">
-  <div class="section-tag">// Our Recommended Brokers</div>
-  <div class="section-title">Trade With The Right Broker</div>
-  <p class="section-sub" style="color:var(--muted);font-size:15px;line-height:1.8;margin-top:16px;max-width:580px;">
-    The broker you trade with matters. We've partnered with two of the most reliable platforms in the market — regulated, fast execution, and built for serious traders. Open your account through our links and get priority access to our exclusive channel.
-  </p>
-
-  <div class="brokers-grid">
-
-    <!-- EXNESS -->
-    <div class="broker-card">
-      <div class="broker-badge">◆ Recommended</div>
-      <div class="broker-name">Exness</div>
-      <p class="broker-tagline">
-        One of the most trusted brokers globally. Instant withdrawals, ultra-low spreads on XAUUSD and major pairs, and no restrictions on trading styles.
-      </p>
-      <ul class="broker-perks">
-        <li>Regulated — FCA, CySEC, FSA & more</li>
-        <li>Instant withdrawals — M-Pesa supported</li>
-        <li>Ultra-low spreads from 0.0 pips</li>
-        <li>Leverage up to 1:2000</li>
-        <li>MT4 & MT5 platforms</li>
-        <li>No minimum deposit restrictions</li>
-      </ul>
-      <a href="https://one.exnessonelink.com/a/3h8djzqknr" target="_blank" class="broker-cta">
-        Open Exness Account →
-      </a>
+    <div class="hero-sessions fade-up delay-4" id="sessionTags">
+      <div class="session-tag" id="tagAsian"><span class="session-dot"></span>🌏 Asian</div>
+      <div class="session-tag" id="tagLondon"><span class="session-dot"></span>🇬🇧 London</div>
+      <div class="session-tag" id="tagNY"><span class="session-dot"></span>🗽 New York</div>
     </div>
 
-    <!-- JUSTMARKETS -->
-    <div class="broker-card">
-      <div class="broker-badge">◆ Recommended</div>
-      <div class="broker-name">JustMarkets</div>
-      <p class="broker-tagline">
-        Fast-growing broker with competitive conditions across all asset classes. Clean execution, generous bonuses, and full MT5 support — ideal for both new and experienced traders.
-      </p>
-      <ul class="broker-perks">
-        <li>Regulated & globally recognised</li>
-        <li>Raw spreads with low commissions</li>
-        <li>High leverage options available</li>
-        <li>Deposit bonuses for new accounts</li>
-        <li>Full MT5 platform support</li>
-        <li>Local payment methods supported</li>
-      </ul>
-      <a href="https://one.justmarkets.link/a/tt3cjg0wun" target="_blank" class="broker-cta">
-        Open JustMarkets Account →
-      </a>
+    <div class="hero-actions fade-up delay-5">
+      <a href="signals.html" class="btn btn-gold">View Live Signals</a>
+      <a href="plans.html"   class="btn btn-outline">See Plans</a>
     </div>
+  </section>
 
-  </div>
-
-  <div class="broker-note">
-    <div class="broker-note-icon">🔒</div>
-    <div class="broker-note-text">
-      <strong>Exclusive Channel Access:</strong> Register through either of our partner links above and send us your account confirmation — you'll get immediate access to our exclusive VIP signals channel at no extra cost. This is our way of rewarding traders who build with us from the ground up.
+  <!-- STATS BAR -->
+  <div class="stats-bar">
+    <div class="stat-cell">
+      <div class="stat-num">3+</div>
+      <div class="stat-label">Free Signals Daily</div>
+    </div>
+    <div class="stat-cell">
+      <div class="stat-num">7</div>
+      <div class="stat-label">VIP Signals Daily</div>
+    </div>
+    <div class="stat-cell">
+      <div class="stat-num">3</div>
+      <div class="stat-label">Sessions Covered</div>
+    </div>
+    <div class="stat-cell">
+      <div class="stat-num">60%</div>
+      <div class="stat-label">Your Profit Share</div>
     </div>
   </div>
-</section>
 
-<!-- CONTACT -->
-<section class="contact-section" id="contact">
-  <div class="section-tag">// Get In Touch</div>
-  <div class="section-title">Contact Us</div>
-  <div class="contact-grid">
-    <div>
-      <p class="section-sub">Ready to start? Have questions? Reach us directly — we respond fast.</p>
-      <div class="contact-links">
-        <a href="https://wa.me/254756170816" target="_blank" class="contact-link">
-          <div class="contact-link-icon">📱</div>
-          <div class="contact-link-info">
-            <div class="contact-link-label">WhatsApp</div>
-            <div class="contact-link-val">+254 756 170 816</div>
-          </div>
-        </a>
-        <a href="https://t.me/justcallmelee10" target="_blank" class="contact-link">
-          <div class="contact-link-icon">✈️</div>
-          <div class="contact-link-info">
-            <div class="contact-link-label">Telegram</div>
-            <div class="contact-link-val">@justcallmelee10</div>
-          </div>
-        </a>
-        <a href="mailto:leedailytrades@gmail.com" class="contact-link">
-          <div class="contact-link-icon">📧</div>
-          <div class="contact-link-info">
-            <div class="contact-link-label">Email</div>
-            <div class="contact-link-val">leedailytrades@gmail.com</div>
-          </div>
-        </a>
+  <!-- LATEST SIGNALS PREVIEW -->
+  <section class="preview-section">
+    <div class="preview-header">
+      <div>
+        <div class="section-tag">// Live Feed</div>
+        <div class="section-title">Latest Signals</div>
+      </div>
+      <div style="display:flex;align-items:center;gap:16px;">
+        <span class="badge badge-green" id="liveSessionBadge" style="display:none;">
+          <span style="width:5px;height:5px;border-radius:50%;background:var(--green);display:inline-block;animation:pulse 1.5s infinite;"></span>
+          Session Live
+        </span>
+        <a href="signals.html" class="btn btn-outline" style="font-size:11px;padding:9px 18px;">Full Dashboard →</a>
       </div>
     </div>
-    <div>
-      <div class="contact-form">
-        <div class="form-group">
-          <label class="form-label">Full Name</label>
-          <input type="text" class="form-input" id="formName" placeholder="Your name" />
-        </div>
-        <div class="form-group">
-          <label class="form-label">Email or WhatsApp</label>
-          <input type="text" class="form-input" id="formContact" placeholder="How to reach you" />
-        </div>
-        <div class="form-group">
-          <label class="form-label">I'm Interested In</label>
-          <select class="form-select" id="formInterest">
-            <option value="">Select an option</option>
-            <option>Free Signals</option>
-            <option>VIP Membership</option>
-            <option>Account Management</option>
-            <option>Private Mentorship</option>
-          </select>
-        </div>
-        <div class="form-group">
-          <label class="form-label">Message (Optional)</label>
-          <textarea class="form-textarea" id="formMessage" placeholder="Any questions or details..."></textarea>
-        </div>
-        <button class="form-submit" onclick="submitForm()">Send Inquiry</button>
-        <div class="form-success" id="formSuccess">✓ Received — we'll be in touch shortly.</div>
+    <div class="signals-preview-grid" id="signalsPreview">
+      <div class="no-signals-msg">No signals yet — check back during session hours.</div>
+    </div>
+  </section>
+
+  <!-- WHY TRADERARC -->
+  <section class="why-section">
+    <div class="section-tag">// Why TraderArc</div>
+    <div class="section-title">Built Different</div>
+    <div class="why-grid">
+      <div class="why-card">
+        <span class="why-icon">📊</span>
+        <div class="why-title">All Three Sessions</div>
+        <p class="why-desc">Asian open, London push, New York close. We're live across every major window — so you never miss a move regardless of your timezone.</p>
+      </div>
+      <div class="why-card">
+        <span class="why-icon">🎯</span>
+        <div class="why-title">Precision Over Volume</div>
+        <p class="why-desc">We don't flood the channel to look busy. Every signal posted is one we've committed to — clean levels, clear direction, defined risk.</p>
+      </div>
+      <div class="why-card">
+        <span class="why-icon">📈</span>
+        <div class="why-title">Weekly Targets</div>
+        <p class="why-desc">We operate with a weekly performance target and report on it. Hit or miss, you'll always know exactly where we stand. Accountability is non-negotiable.</p>
+      </div>
+      <div class="why-card">
+        <span class="why-icon">💼</span>
+        <div class="why-title">We Manage Capital</div>
+        <p class="why-desc">Not ready to trade yourself? We run accounts on a 60/40 profit split — zero upfront fees. We only earn when you earn.</p>
+      </div>
+      <div class="why-card">
+        <span class="why-icon">🎓</span>
+        <div class="why-title">Private Mentorship</div>
+        <p class="why-desc">For traders who want to understand the markets — not just follow signals. 1-on-1 sessions tailored to your level and pace.</p>
+      </div>
+      <div class="why-card">
+        <span class="why-icon">🔒</span>
+        <div class="why-title">Trusted Brokers</div>
+        <p class="why-desc">We've partnered with Exness and JustMarkets — two of the most reliable brokers globally. Open through our links and unlock exclusive VIP access free.</p>
       </div>
     </div>
-  </div>
-</section>
+  </section>
 
-<!-- FOOTER -->
-<footer>
-  <div class="footer-logo">TraderArc</div>
-  <div class="footer-text">© 2024 TraderArc. All rights reserved.</div>
-  <div class="footer-disclaimer">Trading involves risk. Signals are for informational purposes only. Past performance is not indicative of future results.</div>
-</footer>
-
-<!-- ADMIN TOGGLE -->
-<button class="admin-toggle" onclick="openAdmin()" title="Admin Panel">⚙</button>
-
-<!-- ADMIN OVERLAY -->
-<div class="admin-overlay" id="adminOverlay">
-  <div class="admin-panel">
-    <div class="admin-header">
-      <div class="admin-title">Signal Admin</div>
-      <button class="admin-close" onclick="closeAdmin()">✕</button>
+  <!-- CTA BANNER -->
+  <section class="cta-banner">
+    <div class="cta-banner-text">
+      <div class="section-tag">// Ready to Start?</div>
+      <div class="cta-banner-title">The Market Opens<br>Whether You're Ready or Not.</div>
+      <p class="cta-banner-sub">Join TraderArc and be on the right side of the move — every session, every day.</p>
     </div>
-
-    <!-- LOGIN -->
-    <div id="adminLogin" class="admin-login">
-      <div class="admin-login-title">Admin Access</div>
-      <input type="password" class="admin-login-input" id="adminPass" placeholder="Enter password" onkeydown="if(event.key==='Enter')adminLogin()" />
-      <div class="admin-login-err" id="adminErr">Incorrect password</div>
-      <button class="admin-submit" onclick="adminLogin()">Unlock Panel</button>
+    <div class="cta-banner-actions">
+      <a href="https://t.me/justcallmelee10" target="_blank" class="btn btn-gold">Join on Telegram</a>
+      <a href="https://wa.me/254756170816"   target="_blank" class="btn btn-outline">WhatsApp Us</a>
     </div>
+  </section>
 
-    <!-- PANEL -->
-    <div id="adminContent" style="display:none;">
-      <div class="admin-body">
-        <div class="admin-section-title">// Post New Signal</div>
-        <div class="admin-form">
-          <div class="form-group">
-            <label class="form-label">Pair</label>
-            <select class="admin-select" id="aPair">
-              <option>XAUUSD</option>
-              <option>EURUSD</option>
-              <option>GBPUSD</option>
-              <option>USDJPY</option>
-              <option>GBPJPY</option>
-              <option>NASDAQ</option>
-              <option>US30</option>
-              <option>BTCUSD</option>
-              <option>USDCHF</option>
-              <option>AUDUSD</option>
-            </select>
-          </div>
-          <div class="form-group">
-            <label class="form-label">Direction</label>
-            <select class="admin-select" id="aDirection">
-              <option value="buy">BUY</option>
-              <option value="sell">SELL</option>
-            </select>
-          </div>
-          <div class="form-group">
-            <label class="form-label">Entry</label>
-            <input type="text" class="admin-input" id="aEntry" placeholder="e.g. 2341.50" />
-          </div>
-          <div class="form-group">
-            <label class="form-label">Stop Loss</label>
-            <input type="text" class="admin-input" id="aSL" placeholder="e.g. 2328.00" />
-          </div>
-          <div class="form-group">
-            <label class="form-label">Take Profit</label>
-            <input type="text" class="admin-input" id="aTP" placeholder="e.g. 2365.00" />
-          </div>
-          <div class="form-group">
-            <label class="form-label">Session</label>
-            <select class="admin-select" id="aSession">
-              <option>Asian</option>
-              <option>London</option>
-              <option>New York</option>
-            </select>
-          </div>
-          <div class="form-group">
-            <label class="form-label">Type</label>
-            <select class="admin-select" id="aType">
-              <option value="free">Free</option>
-              <option value="vip">VIP</option>
-            </select>
-          </div>
-          <div class="form-group">
-            <label class="form-label">Status</label>
-            <select class="admin-select" id="aStatus">
-              <option value="active">Active</option>
-              <option value="hit">TP Hit ✓</option>
-              <option value="closed">Closed</option>
-            </select>
-          </div>
-        </div>
-        <button class="admin-submit" onclick="postSignal()">Post Signal</button>
-
-        <div class="admin-divider"></div>
-        <div class="admin-section-title">// Posted Signals</div>
-        <div class="admin-signals-list" id="adminSignalsList"></div>
-      </div>
-    </div>
-  </div>
+  <footer class="footer" id="mainFooter"></footer>
 </div>
 
+<div class="ticker" id="mainTicker"></div>
+
+<script src="app.js"></script>
 <script>
-  // ============================================================
-  // TRADERARC — PRODUCTION SIGNAL ENGINE v2.0
-  // ============================================================
+  TA.initNav('index.html');
+  TA.initTicker();
+  TA.initFooter();
 
-  // --- CONFIG ---
-  // Replace with your real bot token and channel chat ID after deployment
-  const BOT_TOKEN   = 'YOUR_BOT_TOKEN_HERE';       // e.g. '7123456789:AAF...'
-  const CHAT_ID     = 'YOUR_CHANNEL_ID_HERE';       // e.g. '-1001234567890'
-  const ADMIN_PASS  = 'TraderArc2024';
-  const FETCH_INTERVAL_MS = 15000;                  // poll every 15 seconds
-  const MAX_SIGNALS = 10;
-
-  // --- STORAGE KEYS ---
-  const KEY_SIGNALS    = 'traderarc_signals_v2';
-  const KEY_OFFSET     = 'traderarc_offset_v2';
-  const KEY_MSG_IDS    = 'traderarc_msgids_v2';
-
-  // ============================================================
-  // STORAGE HELPERS
-  // ============================================================
-  function getSignals() {
-    try { return JSON.parse(localStorage.getItem(KEY_SIGNALS)) || []; }
-    catch { return []; }
+  // Session pills
+  function updateSessionTags() {
+    const sessions = [
+      { id: 'tagAsian',  name: 'Asian'    },
+      { id: 'tagLondon', name: 'London'   },
+      { id: 'tagNY',     name: 'New York' },
+    ];
+    let anyLive = false;
+    sessions.forEach(({ id, name }) => {
+      const el = document.getElementById(id);
+      if (!el) return;
+      const live = TA.isSessionActive(name);
+      el.classList.toggle('live', live);
+      if (live) anyLive = true;
+    });
+    const badge = document.getElementById('liveSessionBadge');
+    if (badge) badge.style.display = anyLive ? 'inline-flex' : 'none';
   }
 
-  function saveSignals(signals) {
-    // Always cap at MAX_SIGNALS, newest first
-    localStorage.setItem(KEY_SIGNALS, JSON.stringify(signals.slice(0, MAX_SIGNALS)));
+  // Preview signals (latest 3)
+  function renderPreview() {
+    const grid    = document.getElementById('signalsPreview');
+    const signals = TA.getSignals().slice(0, 3);
+    if (!grid) return;
+    grid.innerHTML = signals.length
+      ? signals.map(s => TA.signalCardHTML(s)).join('')
+      : '<div class="no-signals-msg">No signals yet — check back during session hours.</div>';
   }
 
-  function getOffset() {
-    return parseInt(localStorage.getItem(KEY_OFFSET) || '0', 10);
-  }
-
-  function saveOffset(offset) {
-    localStorage.setItem(KEY_OFFSET, String(offset));
-  }
-
-  function getProcessedIds() {
-    try { return new Set(JSON.parse(localStorage.getItem(KEY_MSG_IDS)) || []); }
-    catch { return new Set(); }
-  }
-
-  function addProcessedId(id) {
-    const ids = getProcessedIds();
-    ids.add(id);
-    // Keep only last 200 to avoid unbounded growth
-    const trimmed = Array.from(ids).slice(-200);
-    localStorage.setItem(KEY_MSG_IDS, JSON.stringify(trimmed));
-  }
-
-  // ============================================================
-  // SESSION DETECTION — Real UTC-based forex sessions
-  // Asian:    23:00–08:00 UTC
-  // London:   07:00–16:00 UTC
-  // New York: 12:00–21:00 UTC
-  // ============================================================
-  function detectSession(dateObj) {
-    const utcHour = dateObj.getUTCHours() + dateObj.getUTCMinutes() / 60;
-
-    const inAsian   = utcHour >= 23 || utcHour < 8;
-    const inLondon  = utcHour >= 7  && utcHour < 16;
-    const inNewYork = utcHour >= 12 && utcHour < 21;
-
-    // Overlap: London + NY both active → label New York (higher volume)
-    if (inNewYork && inLondon) return 'New York';
-    if (inNewYork) return 'New York';
-    if (inLondon)  return 'London';
-    if (inAsian)   return 'Asian';
-    return 'Off-Hours';
-  }
-
-  function isSessionActive(sessionName) {
-    const utcHour = new Date().getUTCHours() + new Date().getUTCMinutes() / 60;
-    switch (sessionName) {
-      case 'Asian':    return utcHour >= 23 || utcHour < 8;
-      case 'London':   return utcHour >= 7  && utcHour < 16;
-      case 'New York': return utcHour >= 12 && utcHour < 21;
-      default:         return false;
-    }
-  }
-
-  // ============================================================
-  // TIME FORMATTER — Always Kenya time (UTC+3), never breaks
-  // ============================================================
-  function formatKenyaTime(unixTimestamp) {
-    try {
-      const d = unixTimestamp ? new Date(unixTimestamp * 1000) : new Date();
-      return d.toLocaleTimeString('en-KE', {
-        hour: '2-digit',
-        minute: '2-digit',
-        hour12: true,
-        timeZone: 'Africa/Nairobi'
-      });
-    } catch {
-      return new Date().toLocaleTimeString('en-KE', {
-        hour: '2-digit', minute: '2-digit', hour12: true
-      });
-    }
-  }
-
-  // ============================================================
-  // TELEGRAM MESSAGE PARSER
-  // Parses signal format from channel messages:
-  // Expected format (flexible):
-  //   XAUUSD BUY
-  //   Entry: 2341.50
-  //   SL: 2328.00
-  //   TP: 2365.00
-  // ============================================================
-  const KNOWN_PAIRS = [
-    'XAUUSD','EURUSD','GBPUSD','USDJPY','GBPJPY',
-    'NASDAQ','US30','BTCUSD','USDCHF','AUDUSD',
-    'NZDUSD','USDCAD','XAGUSD','US500','GER40'
-  ];
-
-  function parseSignalMessage(text, msgDate, msgId) {
-    if (!text) return null;
-    const upper = text.toUpperCase();
-
-    // Must contain a known pair
-    const pair = KNOWN_PAIRS.find(p => upper.includes(p));
-    if (!pair) return null;
-
-    // Must contain direction
-    const dirMatch = upper.match(/\b(BUY|SELL)\b/);
-    if (!dirMatch) return null;
-    const direction = dirMatch[1].toLowerCase();
-
-    // Extract levels — flexible: "Entry:", "ENTRY:", "entry" etc.
-    const entryMatch = text.match(/entry[:\s]*([0-9]+\.?[0-9]*)/i);
-    const slMatch    = text.match(/s\.?l\.?[:\s]*([0-9]+\.?[0-9]*)/i);
-    const tpMatch    = text.match(/t\.?p\.?[:\s]*([0-9]+\.?[0-9]*)/i);
-
-    // All three levels required — no ghost signals
-    if (!entryMatch || !slMatch || !tpMatch) return null;
-
-    const entry = entryMatch[1];
-    const sl    = slMatch[1];
-    const tp    = tpMatch[1];
-
-    // Validate numbers are real
-    if (isNaN(parseFloat(entry)) || isNaN(parseFloat(sl)) || isNaN(parseFloat(tp))) return null;
-
-    const msgDateObj = msgDate ? new Date(msgDate * 1000) : new Date();
-    const session    = detectSession(msgDateObj);
-    const time       = formatKenyaTime(msgDate);
-
-    // Determine type — VIP keyword in message
-    const type = upper.includes('VIP') ? 'vip' : 'free';
-
-    return {
-      id:        msgId,         // Use Telegram message_id as unique ID
-      pair,
-      direction,
-      entry,
-      sl,
-      tp,
-      session,
-      type,
-      status:    'active',
-      time,
-      msgId,
-    };
-  }
-
-  // ============================================================
-  // COMMAND PARSER — handles reply commands
-  // "SL HIT" / "CLOSE TRADE" / "NEXT TRADE"
-  // ============================================================
-  function parseCommand(text, replyToMsgId) {
-    if (!text || !replyToMsgId) return null;
-    const upper = text.trim().toUpperCase();
-
-    if (upper === 'SL HIT')        return { targetMsgId: replyToMsgId, status: 'closed', label: 'SL Hit' };
-    if (upper === 'CLOSE TRADE')   return { targetMsgId: replyToMsgId, status: 'closed', label: 'Closed' };
-    if (upper === 'NEXT TRADE')    return { targetMsgId: replyToMsgId, status: 'closed', label: 'Closed' };
-    if (upper.includes('TP HIT') || upper.includes('TARGET HIT')) {
-      return { targetMsgId: replyToMsgId, status: 'hit', label: 'TP Hit' };
-    }
-    return null;
-  }
-
-  // ============================================================
-  // TELEGRAM FETCH — getUpdates with correct offset
-  // ============================================================
-  let fetchTimer = null;
-  let isFetching = false;
-
-  async function fetchTelegramUpdates() {
-    if (isFetching) return;
-    if (!BOT_TOKEN || BOT_TOKEN === 'YOUR_BOT_TOKEN_HERE') return;
-
-    isFetching = true;
-    const offset = getOffset();
-
-    try {
-      const url = `https://api.telegram.org/bot${BOT_TOKEN}/getUpdates?offset=${offset}&limit=50&timeout=0`;
-      const res  = await fetch(url);
-      if (!res.ok) throw new Error(`HTTP ${res.status}`);
-      const data = await res.json();
-
-      if (!data.ok || !Array.isArray(data.result)) throw new Error('Bad response');
-      if (data.result.length === 0) return;
-
-      const processedIds = getProcessedIds();
-      let signals        = getSignals();
-      let changed        = false;
-      let maxUpdateId    = offset - 1;
-
-      for (const update of data.result) {
-        const updateId = update.update_id;
-        maxUpdateId    = Math.max(maxUpdateId, updateId);
-
-        const msg = update.message || update.channel_post;
-        if (!msg) continue;
-
-        const msgId   = msg.message_id;
-        const msgText = msg.text || msg.caption || '';
-        const msgDate = msg.date;
-
-        // Skip already-processed messages
-        if (processedIds.has(msgId)) continue;
-        addProcessedId(msgId);
-
-        // --- Check if this is a reply command ---
-        const replyToId = msg.reply_to_message?.message_id;
-        const command   = parseCommand(msgText, replyToId);
-
-        if (command) {
-          // Update the signal that matches the replied-to message
-          signals = signals.map(s =>
-            s.msgId === command.targetMsgId ? { ...s, status: command.status } : s
-          );
-          changed = true;
-          continue;
-        }
-
-        // --- Try to parse as a new signal ---
-        const signal = parseSignalMessage(msgText, msgDate, msgId);
-        if (!signal) continue;
-
-        // Strict duplicate check — no same msgId or same pair+entry+direction within 60s
-        const isDuplicate = signals.some(s =>
-          s.msgId === msgId ||
-          (s.pair === signal.pair &&
-           s.entry === signal.entry &&
-           s.direction === signal.direction &&
-           Math.abs((s.msgId || 0) - msgId) < 10)
-        );
-        if (isDuplicate) continue;
-
-        signals.unshift(signal);
-        changed = true;
-      }
-
-      // Advance offset to prevent re-processing
-      saveOffset(maxUpdateId + 1);
-
-      if (changed) {
-        saveSignals(signals);
-        renderSignals();
-        if (document.getElementById('adminContent').style.display !== 'none') {
-          renderAdminList();
-        }
-      }
-
-    } catch (err) {
-      console.warn('[TraderArc] Telegram fetch error:', err.message);
-    } finally {
-      isFetching = false;
-    }
-  }
-
-  function startPolling() {
-    fetchTelegramUpdates();
-    fetchTimer = setInterval(fetchTelegramUpdates, FETCH_INTERVAL_MS);
-  }
-
-  // ============================================================
-  // RENDER SIGNALS — clean, duplicate-free, max 10
-  // ============================================================
-  function renderSignals() {
-    const grid    = document.getElementById('signalsGrid');
-    const signals = getSignals();
-
-    if (!signals.length) {
-      grid.innerHTML = '<div class="no-signals">No signals posted yet. Check back during session hours.</div>';
-      return;
-    }
-
-    grid.innerHTML = signals.map(s => {
-      // Sanitize all fields before rendering
-      const pair      = String(s.pair      || '—').toUpperCase();
-      const direction = String(s.direction || 'buy').toLowerCase();
-      const entry     = String(s.entry     || '—');
-      const tp        = String(s.tp        || '—');
-      const sl        = String(s.sl        || '—');
-      const session   = String(s.session   || '—');
-      const time      = String(s.time      || '—');
-      const status    = String(s.status    || 'active');
-
-      const statusLabel = status === 'active' ? 'Active'
-                        : status === 'hit'    ? 'TP Hit ✓'
-                        : 'Closed';
-
-      // Show session active indicator only if currently within window
-      const sessionActive = isSessionActive(session);
-      const sessionDot    = sessionActive
-        ? '<span style="display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--green);margin-right:6px;animation:pulse 1.5s infinite;"></span>'
-        : '';
-
-      return `
-        <div class="signal-card">
-          <div class="signal-top">
-            <div class="signal-pair">${pair}</div>
-            <div class="signal-direction ${direction}">${direction.toUpperCase()}</div>
-          </div>
-          <div class="signal-levels">
-            <div class="signal-level-item">
-              <div class="signal-level-label">Entry</div>
-              <div class="signal-level-val">${entry}</div>
-            </div>
-            <div class="signal-level-item">
-              <div class="signal-level-label">TP</div>
-              <div class="signal-level-val tp">${tp}</div>
-            </div>
-            <div class="signal-level-item">
-              <div class="signal-level-label">SL</div>
-              <div class="signal-level-val sl">${sl}</div>
-            </div>
-          </div>
-          <div class="signal-footer">
-            <div class="signal-session">${sessionDot}${session} Session</div>
-            <div class="signal-status ${status}">${statusLabel}</div>
-            <div class="signal-time">${time}</div>
-          </div>
-        </div>`;
-    }).join('');
-  }
-
-  // ============================================================
-  // ADMIN PANEL
-  // ============================================================
-  function adminLogin() {
-    const pass = document.getElementById('adminPass').value;
-    if (pass === ADMIN_PASS) {
-      document.getElementById('adminLogin').style.display = 'none';
-      document.getElementById('adminContent').style.display = 'block';
-      renderAdminList();
-    } else {
-      document.getElementById('adminErr').style.display = 'block';
-    }
-  }
-
-  function openAdmin() {
-    document.getElementById('adminOverlay').classList.add('open');
-    document.getElementById('adminPass').value = '';
-    document.getElementById('adminErr').style.display = 'none';
-    document.getElementById('adminLogin').style.display = 'block';
-    document.getElementById('adminContent').style.display = 'none';
-  }
-
-  function closeAdmin() {
-    document.getElementById('adminOverlay').classList.remove('open');
-  }
-
-  // Manual signal post from admin panel
-  function postSignal() {
-    const pair      = document.getElementById('aPair').value;
-    const direction = document.getElementById('aDirection').value;
-    const entry     = document.getElementById('aEntry').value.trim();
-    const sl        = document.getElementById('aSL').value.trim();
-    const tp        = document.getElementById('aTP').value.trim();
-    const session   = document.getElementById('aSession').value;
-    const type      = document.getElementById('aType').value;
-    const status    = document.getElementById('aStatus').value;
-
-    if (!entry || !sl || !tp) { alert('Fill in Entry, SL and TP.'); return; }
-    if (isNaN(parseFloat(entry)) || isNaN(parseFloat(sl)) || isNaN(parseFloat(tp))) {
-      alert('Entry, SL and TP must be valid numbers.'); return;
-    }
-
-    const now     = new Date();
-    const time    = formatKenyaTime(null);
-    const id      = Date.now(); // manual signals use timestamp as ID
-
-    // Check for duplicate pair+entry+direction in existing signals
-    const existing = getSignals();
-    const isDupe   = existing.some(s =>
-      s.pair === pair && s.entry === entry && s.direction === direction
-    );
-    if (isDupe) { alert('A signal with this pair, entry and direction already exists.'); return; }
-
-    const signal = { id, msgId: id, pair, direction, entry, sl, tp, session, type, status, time };
-    existing.unshift(signal);
-    saveSignals(existing);
-    renderSignals();
-    renderAdminList();
-
-    document.getElementById('aEntry').value = '';
-    document.getElementById('aSL').value    = '';
-    document.getElementById('aTP').value    = '';
-  }
-
-  function renderAdminList() {
-    const list    = document.getElementById('adminSignalsList');
-    const signals = getSignals();
-
-    if (!signals.length) {
-      list.innerHTML = '<div style="color:var(--muted);font-size:13px;text-align:center;padding:20px;font-family:\'DM Mono\',monospace;letter-spacing:1px;">No signals posted yet</div>';
-      return;
-    }
-
-    list.innerHTML = signals.map(s => `
-      <div class="admin-signal-item">
-        <div class="admin-signal-info">
-          <div class="admin-signal-pair">${s.pair}</div>
-          <div class="admin-signal-dir ${s.direction}">${s.direction.toUpperCase()}</div>
-          <div class="admin-signal-meta">${s.entry} · SL ${s.sl} · TP ${s.tp} · ${s.session} · ${s.time}</div>
-        </div>
-        <div class="admin-signal-actions">
-          <select class="admin-select" style="padding:5px 8px;font-size:11px;width:auto;"
-            onchange="updateStatus(${s.id}, this.value)">
-            <option value="active" ${s.status==='active'?'selected':''}>Active</option>
-            <option value="hit"    ${s.status==='hit'   ?'selected':''}>TP Hit</option>
-            <option value="closed" ${s.status==='closed'?'selected':''}>Closed</option>
-          </select>
-          <button class="admin-btn-small del" onclick="deleteSignal(${s.id})">✕</button>
-        </div>
-      </div>
-    `).join('');
-  }
-
-  function updateStatus(id, status) {
-    const signals = getSignals().map(s => s.id === id ? { ...s, status } : s);
-    saveSignals(signals);
-    renderSignals();
-    renderAdminList();
-  }
-
-  function deleteSignal(id) {
-    const signals = getSignals().filter(s => s.id !== id);
-    saveSignals(signals);
-    renderSignals();
-    renderAdminList();
-  }
-
-  // ============================================================
-  // CONTACT FORM
-  // ============================================================
-  function submitForm() {
-    const name     = document.getElementById('formName').value.trim();
-    const contact  = document.getElementById('formContact').value.trim();
-    const interest = document.getElementById('formInterest').value;
-    if (!name || !contact || !interest) { alert('Please fill in all required fields.'); return; }
-    document.getElementById('formSuccess').style.display = 'block';
-    document.getElementById('formName').value    = '';
-    document.getElementById('formContact').value = '';
-    document.getElementById('formInterest').value = '';
-    document.getElementById('formMessage').value  = '';
-  }
-
-  // ============================================================
-  // INIT
-  // ============================================================
-  renderSignals();
-  startPolling();
+  updateSessionTags();
+  setInterval(updateSessionTags, 60000);
+  renderPreview();
+  TA.startPolling(renderPreview);
 </script>
 </body>
 </html>
