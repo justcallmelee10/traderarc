@@ -1796,8 +1796,8 @@
   // ============================================================
 
   // --- CONFIG ---
-  const BOT_TOKEN   = '8709177130:AAHF2LnJILRW8TLY6B0YxljjZtWveRmc9AA';
-  const CHAT_ID     = '8494955342';
+  const BOT_TOKEN   = 'YOUR_BOT_TOKEN_HERE';
+  const CHAT_ID     = 'YOUR_CHANNEL_ID_HERE';
   const ADMIN_PASS  = 'TraderArc2024';
   const FETCH_INTERVAL_MS = 15000;
   const MAX_SIGNALS = 10;
@@ -1937,7 +1937,7 @@
 
   async function fetchTelegramUpdates() {
     if (isFetching) return;
-    if (!BOT_TOKEN || BOT_TOKEN === '8709177130:AAHF2LnJILRW8TLY6B0YxljjZtWveRmc9AA') return;
+    if (!BOT_TOKEN || BOT_TOKEN === 'YOUR_BOT_TOKEN_HERE') return;
     isFetching = true;
     const offset = getOffset();
     try {
