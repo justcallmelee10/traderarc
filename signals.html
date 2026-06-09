@@ -1,0 +1,560 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="TraderArc Live Signals — Real-time Forex trading signals across Asian, London and New York sessions." />
+  <title>Signals — TraderArc</title>
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    .signals-hero {
+      padding: 64px 48px 48px;
+      border-bottom: 1px solid var(--border);
+      background: var(--deep);
+      position: relative; overflow: hidden;
+    }
+
+    .signals-hero::before {
+      content: '';
+      position: absolute; top: 0; right: 0;
+      width: 50%; height: 100%;
+      background: radial-gradient(ellipse at right center, var(--gold-glow), transparent 70%);
+      pointer-events: none;
+    }
+
+    .signals-meta {
+      display: flex; align-items: center; gap: 16px;
+      margin-top: 20px; flex-wrap: wrap;
+    }
+
+    /* FILTER BAR */
+    .filter-bar {
+      padding: 20px 48px;
+      border-bottom: 1px solid var(--border);
+      display: flex; align-items: center; gap: 10px;
+      flex-wrap: wrap; background: var(--deep);
+    }
+
+    .filter-btn {
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--muted);
+      padding: 7px 16px;
+      font-family: 'DM Mono', monospace;
+      font-size: 11px; letter-spacing: 1.5px;
+      text-transform: uppercase;
+      border-radius: 2px; cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .filter-btn:hover  { border-color: var(--border2); color: var(--text); }
+    .filter-btn.active { background: var(--gold); color: var(--black); border-color: var(--gold); font-weight: 700; }
+
+    .filter-sep {
+      width: 1px; height: 20px;
+      background: var(--border); margin: 0 4px;
+    }
+
+    /* SIGNALS GRID */
+    .signals-main { padding: 40px 48px 80px; }
+
+    .signals-count {
+      font-family: 'DM Mono', monospace;
+      font-size: 11px; color: var(--muted);
+      letter-spacing: 2px; text-transform: uppercase;
+      margin-bottom: 24px;
+    }
+
+    .signals-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 1px;
+      background: var(--border);
+      border: 1px solid var(--border);
+    }
+
+    .no-signals-msg {
+      grid-column: 1/-1;
+      padding: 80px 32px;
+      text-align: center;
+      font-family: 'DM Mono', monospace;
+      font-size: 12px; letter-spacing: 2px; color: var(--muted2);
+    }
+
+    /* SESSION STATUS ROW */
+    .session-status-row {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1px;
+      background: var(--border);
+      border: 1px solid var(--border);
+      margin-bottom: 32px;
+    }
+
+    .session-cell {
+      background: var(--card);
+      padding: 18px 24px;
+      display: flex; align-items: center;
+      justify-content: space-between;
+    }
+
+    .session-cell-name {
+      font-family: 'DM Mono', monospace;
+      font-size: 12px; letter-spacing: 2px;
+      text-transform: uppercase; color: var(--muted);
+    }
+
+    .session-cell-time {
+      font-size: 11px; color: var(--muted2);
+      margin-top: 3px;
+    }
+
+    /* ADMIN PANEL */
+    .admin-fab {
+      position: fixed; bottom: 52px; right: 24px;
+      z-index: 300;
+      background: var(--gold); color: var(--black);
+      border: none; width: 50px; height: 50px;
+      border-radius: 2px; font-size: 18px;
+      cursor: pointer; box-shadow: 0 4px 24px rgba(200,164,74,0.25);
+      transition: all 0.2s; display: flex;
+      align-items: center; justify-content: center;
+    }
+
+    .admin-fab:hover { background: var(--gold-light); transform: translateY(-2px); }
+
+    .admin-overlay {
+      display: none; position: fixed; inset: 0;
+      background: rgba(7,9,13,0.92);
+      z-index: 600; backdrop-filter: blur(10px);
+      overflow-y: auto; align-items: flex-start;
+      justify-content: center; padding: 40px 16px;
+    }
+
+    .admin-overlay.open { display: flex; }
+
+    .admin-panel {
+      background: var(--deep);
+      border: 1px solid var(--border);
+      width: 100%; max-width: 660px;
+      border-radius: 2px; overflow: hidden;
+    }
+
+    .admin-head {
+      padding: 20px 28px;
+      background: var(--card);
+      border-bottom: 1px solid var(--border);
+      display: flex; justify-content: space-between; align-items: center;
+    }
+
+    .admin-head-title {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 22px; letter-spacing: 2px; color: var(--gold);
+    }
+
+    .admin-close {
+      background: none; border: none; color: var(--muted);
+      font-size: 20px; cursor: pointer; line-height: 1;
+    }
+
+    .admin-close:hover { color: var(--text); }
+
+    .admin-body { padding: 28px; }
+
+    .admin-stag {
+      font-family: 'DM Mono', monospace; font-size: 10px;
+      letter-spacing: 3px; text-transform: uppercase;
+      color: var(--gold); margin-bottom: 18px;
+    }
+
+    .admin-grid {
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: 12px; margin-bottom: 18px;
+    }
+
+    .admin-grid .full { grid-column: 1/-1; }
+
+    .admin-label {
+      display: block; font-size: 10px; letter-spacing: 2px;
+      text-transform: uppercase; color: var(--muted);
+      margin-bottom: 6px; font-weight: 500;
+    }
+
+    .admin-input, .admin-select {
+      background: var(--card); border: 1px solid var(--border);
+      color: var(--text); padding: 11px 14px;
+      font-family: 'DM Sans', sans-serif; font-size: 13px;
+      border-radius: 2px; outline: none; width: 100%;
+      transition: border-color 0.2s;
+    }
+
+    .admin-input:focus, .admin-select:focus { border-color: var(--gold); }
+    .admin-select option { background: var(--card); }
+
+    .admin-submit {
+      background: var(--gold); color: var(--black);
+      padding: 12px 24px; font-size: 12px; font-weight: 700;
+      letter-spacing: 2px; text-transform: uppercase;
+      border: none; border-radius: 2px; cursor: pointer;
+      width: 100%; transition: background 0.2s;
+    }
+
+    .admin-submit:hover { background: var(--gold-light); }
+
+    .admin-divider { height: 1px; background: var(--border); margin: 24px 0; }
+
+    .admin-list { display: flex; flex-direction: column; gap: 8px; max-height: 300px; overflow-y: auto; }
+
+    .admin-item {
+      background: var(--card); border: 1px solid var(--border);
+      padding: 14px 16px; border-radius: 2px;
+      display: flex; justify-content: space-between;
+      align-items: center; gap: 12px; flex-wrap: wrap;
+    }
+
+    .admin-item-info { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; flex: 1; }
+    .admin-item-pair { font-family: 'Bebas Neue', sans-serif; font-size: 18px; letter-spacing: 1px; color: var(--white); }
+
+    .admin-item-meta { font-family: 'DM Mono', monospace; font-size: 10px; color: var(--muted); }
+
+    .admin-item-actions { display: flex; gap: 8px; flex-shrink: 0; }
+
+    .admin-sm-select {
+      background: var(--deep); border: 1px solid var(--border);
+      color: var(--text); padding: 5px 8px;
+      font-size: 11px; border-radius: 2px; cursor: pointer;
+    }
+
+    .admin-del {
+      background: none; border: 1px solid var(--border);
+      color: var(--muted); padding: 5px 10px;
+      font-size: 11px; border-radius: 2px; cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .admin-del:hover { border-color: var(--red); color: var(--red); }
+
+    /* LOGIN */
+    .admin-login { padding: 32px 28px; }
+    .admin-login-title { font-family: 'Bebas Neue', sans-serif; font-size: 26px; letter-spacing: 2px; color: var(--white); margin-bottom: 20px; }
+    .admin-err { color: var(--red); font-size: 12px; margin-bottom: 10px; display: none; }
+
+    @media (max-width: 768px) {
+      .signals-hero, .filter-bar, .signals-main { padding-left: 20px; padding-right: 20px; }
+      .admin-grid { grid-template-columns: 1fr; }
+      .session-status-row { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<nav class="nav" id="mainNav"></nav>
+
+<div class="page">
+
+  <!-- PAGE HERO -->
+  <div class="signals-hero">
+    <div class="section-tag">// Live Signal Feed</div>
+    <div class="section-title">Active Signals</div>
+    <div class="signals-meta">
+      <span class="badge badge-green" id="liveBadge" style="display:none;">
+        <span style="width:5px;height:5px;border-radius:50%;background:var(--green);display:inline-block;animation:pulse 1.5s infinite;"></span>
+        Live Now
+      </span>
+      <span class="badge badge-muted" id="sessionLabel">Detecting session...</span>
+      <span style="font-family:'DM Mono',monospace;font-size:11px;color:var(--muted2);" id="kenyaTime"></span>
+    </div>
+  </div>
+
+  <!-- FILTER BAR -->
+  <div class="filter-bar">
+    <button class="filter-btn active" data-filter="all">All</button>
+    <button class="filter-btn" data-filter="active">Active</button>
+    <button class="filter-btn" data-filter="hit">TP Hit</button>
+    <button class="filter-btn" data-filter="closed">Closed</button>
+    <div class="filter-sep"></div>
+    <button class="filter-btn" data-filter="free">Free</button>
+    <button class="filter-btn" data-filter="vip">VIP</button>
+    <div class="filter-sep"></div>
+    <button class="filter-btn" data-filter="Asian">Asian</button>
+    <button class="filter-btn" data-filter="London">London</button>
+    <button class="filter-btn" data-filter="New York">NY</button>
+  </div>
+
+  <!-- MAIN -->
+  <div class="signals-main">
+
+    <!-- SESSION STATUS -->
+    <div class="session-status-row">
+      <div class="session-cell">
+        <div>
+          <div class="session-cell-name">🌏 Asian</div>
+          <div class="session-cell-time">02:00 – 11:00 EAT</div>
+        </div>
+        <span class="badge" id="asianStatus">–</span>
+      </div>
+      <div class="session-cell">
+        <div>
+          <div class="session-cell-name">🇬🇧 London</div>
+          <div class="session-cell-time">10:00 – 07:00 PM EAT</div>
+        </div>
+        <span class="badge" id="londonStatus">–</span>
+      </div>
+      <div class="session-cell">
+        <div>
+          <div class="session-cell-name">🗽 New York</div>
+          <div class="session-cell-time">03:00 PM – 12:00 AM EAT</div>
+        </div>
+        <span class="badge" id="nyStatus">–</span>
+      </div>
+    </div>
+
+    <div class="signals-count" id="signalsCount">Loading signals...</div>
+
+    <div class="signals-grid" id="signalsGrid">
+      <div class="no-signals-msg">No signals posted yet.</div>
+    </div>
+
+  </div>
+
+  <footer class="footer" id="mainFooter"></footer>
+</div>
+
+<div class="ticker" id="mainTicker"></div>
+
+<!-- ADMIN FAB -->
+<button class="admin-fab" onclick="openAdmin()" title="Admin">⚙</button>
+
+<!-- ADMIN OVERLAY -->
+<div class="admin-overlay" id="adminOverlay">
+  <div class="admin-panel">
+    <div class="admin-head">
+      <div class="admin-head-title">Signal Admin</div>
+      <button class="admin-close" onclick="closeAdmin()">✕</button>
+    </div>
+
+    <!-- LOGIN -->
+    <div id="adminLogin" class="admin-login">
+      <div class="admin-login-title">Admin Access</div>
+      <input type="password" class="admin-input" id="adminPass" placeholder="Password" style="margin-bottom:10px;"
+        onkeydown="if(event.key==='Enter')doLogin()" />
+      <div class="admin-err" id="adminErr">Incorrect password</div>
+      <button class="admin-submit" onclick="doLogin()">Unlock</button>
+    </div>
+
+    <!-- PANEL -->
+    <div id="adminContent" style="display:none;">
+      <div class="admin-body">
+        <div class="admin-stag">// Post Signal</div>
+        <div class="admin-grid">
+          <div>
+            <label class="admin-label">Pair</label>
+            <select class="admin-select" id="aPair">
+              <option>XAUUSD</option><option>EURUSD</option><option>GBPUSD</option>
+              <option>USDJPY</option><option>GBPJPY</option><option>NASDAQ</option>
+              <option>US30</option><option>BTCUSD</option><option>USDCHF</option><option>AUDUSD</option>
+            </select>
+          </div>
+          <div>
+            <label class="admin-label">Direction</label>
+            <select class="admin-select" id="aDir">
+              <option value="buy">BUY</option>
+              <option value="sell">SELL</option>
+            </select>
+          </div>
+          <div>
+            <label class="admin-label">Entry</label>
+            <input type="text" class="admin-input" id="aEntry" placeholder="e.g. 2341.50" />
+          </div>
+          <div>
+            <label class="admin-label">Stop Loss</label>
+            <input type="text" class="admin-input" id="aSL" placeholder="e.g. 2328.00" />
+          </div>
+          <div>
+            <label class="admin-label">Take Profit</label>
+            <input type="text" class="admin-input" id="aTP" placeholder="e.g. 2365.00" />
+          </div>
+          <div>
+            <label class="admin-label">Session</label>
+            <select class="admin-select" id="aSession">
+              <option>Asian</option><option>London</option><option>New York</option>
+            </select>
+          </div>
+          <div>
+            <label class="admin-label">Type</label>
+            <select class="admin-select" id="aType">
+              <option value="free">Free</option>
+              <option value="vip">VIP</option>
+            </select>
+          </div>
+          <div>
+            <label class="admin-label">Status</label>
+            <select class="admin-select" id="aStatus">
+              <option value="active">Active</option>
+              <option value="hit">TP Hit</option>
+              <option value="closed">Closed</option>
+            </select>
+          </div>
+        </div>
+        <button class="admin-submit" onclick="submitSignal()">Post Signal</button>
+
+        <div class="admin-divider"></div>
+        <div class="admin-stag">// Manage Signals</div>
+        <div class="admin-list" id="adminList"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="app.js"></script>
+<script>
+  TA.initNav('signals.html');
+  TA.initTicker();
+  TA.initFooter();
+
+  let currentFilter = 'all';
+
+  // --- CLOCK ---
+  function updateClock() {
+    const el = document.getElementById('kenyaTime');
+    if (!el) return;
+    el.textContent = new Date().toLocaleTimeString('en-KE', {
+      hour: '2-digit', minute: '2-digit', second: '2-digit',
+      hour12: true, timeZone: 'Africa/Nairobi'
+    }) + ' EAT';
+  }
+  updateClock(); setInterval(updateClock, 1000);
+
+  // --- SESSION STATUS ---
+  function updateSessionStatus() {
+    const sessions = [
+      { id: 'asianStatus',  name: 'Asian'    },
+      { id: 'londonStatus', name: 'London'   },
+      { id: 'nyStatus',     name: 'New York' },
+    ];
+    let anyLive = false;
+    let liveNames = [];
+    sessions.forEach(({ id, name }) => {
+      const el   = document.getElementById(id);
+      const live = TA.isSessionActive(name);
+      if (live) { anyLive = true; liveNames.push(name); }
+      if (el) {
+        el.className = 'badge ' + (live ? 'badge-green' : 'badge-muted');
+        el.textContent = live ? 'Live' : 'Closed';
+      }
+    });
+    const badge = document.getElementById('liveBadge');
+    const label = document.getElementById('sessionLabel');
+    if (badge) badge.style.display = anyLive ? 'inline-flex' : 'none';
+    if (label) label.textContent = anyLive ? liveNames.join(' + ') + ' Session' : 'Markets Closed';
+  }
+  updateSessionStatus();
+  setInterval(updateSessionStatus, 30000);
+
+  // --- RENDER ---
+  function renderSignals() {
+    const grid = document.getElementById('signalsGrid');
+    const countEl = document.getElementById('signalsCount');
+    let signals = TA.getSignals();
+
+    // Apply filter
+    if (currentFilter !== 'all') {
+      signals = signals.filter(s => {
+        if (['active','hit','closed'].includes(currentFilter)) return s.status === currentFilter;
+        if (['free','vip'].includes(currentFilter)) return s.type === currentFilter;
+        if (['Asian','London','New York'].includes(currentFilter)) return s.session === currentFilter;
+        return true;
+      });
+    }
+
+    if (countEl) countEl.textContent = `Showing ${signals.length} signal${signals.length !== 1 ? 's' : ''}`;
+
+    grid.innerHTML = signals.length
+      ? signals.map(s => TA.signalCardHTML(s)).join('')
+      : '<div class="no-signals-msg">No signals match this filter.</div>';
+  }
+
+  // --- FILTERS ---
+  document.querySelectorAll('.filter-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      currentFilter = btn.dataset.filter;
+      renderSignals();
+    });
+  });
+
+  // --- ADMIN ---
+  function openAdmin() {
+    document.getElementById('adminOverlay').classList.add('open');
+    document.getElementById('adminPass').value = '';
+    document.getElementById('adminErr').style.display = 'none';
+    document.getElementById('adminLogin').style.display = 'block';
+    document.getElementById('adminContent').style.display = 'none';
+  }
+
+  function closeAdmin() { document.getElementById('adminOverlay').classList.remove('open'); }
+
+  function doLogin() {
+    if (TA.adminLogin(document.getElementById('adminPass').value)) {
+      document.getElementById('adminLogin').style.display = 'none';
+      document.getElementById('adminContent').style.display = 'block';
+      renderAdminList();
+    } else {
+      document.getElementById('adminErr').style.display = 'block';
+    }
+  }
+
+  function submitSignal() {
+    const result = TA.postManualSignal({
+      pair:      document.getElementById('aPair').value,
+      direction: document.getElementById('aDir').value,
+      entry:     document.getElementById('aEntry').value.trim(),
+      sl:        document.getElementById('aSL').value.trim(),
+      tp:        document.getElementById('aTP').value.trim(),
+      session:   document.getElementById('aSession').value,
+      type:      document.getElementById('aType').value,
+      status:    document.getElementById('aStatus').value,
+    });
+    if (!result.ok) { alert(result.err); return; }
+    document.getElementById('aEntry').value = '';
+    document.getElementById('aSL').value    = '';
+    document.getElementById('aTP').value    = '';
+    renderSignals(); renderAdminList();
+  }
+
+  function renderAdminList() {
+    const list    = document.getElementById('adminList');
+    const signals = TA.getSignals();
+    if (!signals.length) {
+      list.innerHTML = '<div style="text-align:center;padding:20px;font-family:\'DM Mono\',monospace;font-size:11px;color:var(--muted2);">No signals yet</div>';
+      return;
+    }
+    list.innerHTML = signals.map(s => `
+      <div class="admin-item">
+        <div class="admin-item-info">
+          <div class="admin-item-pair">${s.pair}</div>
+          <span class="badge ${s.direction === 'buy' ? 'badge-green' : 'badge-red'}" style="font-size:9px;">${s.direction.toUpperCase()}</span>
+          <div class="admin-item-meta">${s.entry} · SL ${s.sl} · TP ${s.tp} · ${s.time}</div>
+        </div>
+        <div class="admin-item-actions">
+          <select class="admin-sm-select" onchange="updateSig(${s.id}, this.value)">
+            <option value="active" ${s.status==='active'?'selected':''}>Active</option>
+            <option value="hit"    ${s.status==='hit'   ?'selected':''}>TP Hit</option>
+            <option value="closed" ${s.status==='closed'?'selected':''}>Closed</option>
+          </select>
+          <button class="admin-del" onclick="delSig(${s.id})">✕</button>
+        </div>
+      </div>
+    `).join('');
+  }
+
+  function updateSig(id, status) { TA.updateSignalStatus(id, status); renderSignals(); renderAdminList(); }
+  function delSig(id)             { TA.deleteSignal(id); renderSignals(); renderAdminList(); }
+
+  // --- INIT ---
+  renderSignals();
+  TA.startPolling(() => { renderSignals(); renderAdminList(); });
+</script>
+</body>
+</html>
