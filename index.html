@@ -1504,6 +1504,10 @@
         <a href="https://one.exnessonelink.com/a/3h8djzqknr" target="_blank" class="broker-cta">
           Open Exness Account →
         </a>
+        <div style="margin-top:20px;padding:14px 18px;background:var(--gold-dim);border:1px solid rgba(201,168,76,0.2);border-radius:2px;display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
+          <span style="font-size:11px;color:var(--muted);letter-spacing:1px;">If partner code doesn't auto-fill, enter manually:</span>
+          <span style="font-family:'DM Mono',monospace;font-size:15px;color:var(--gold);letter-spacing:2px;font-weight:500;">3h8djzqknr</span>
+        </div>
       </div>
 
       <!-- JUSTMARKETS -->
@@ -1524,6 +1528,10 @@
         <a href="https://one.justmarkets.link/a/tt3cjg0wun" target="_blank" class="broker-cta">
           Open JustMarkets Account →
         </a>
+        <div style="margin-top:20px;padding:14px 18px;background:var(--gold-dim);border:1px solid rgba(201,168,76,0.2);border-radius:2px;display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
+          <span style="font-size:11px;color:var(--muted);letter-spacing:1px;">If partner code doesn't auto-fill, enter manually:</span>
+          <span style="font-family:'DM Mono',monospace;font-size:15px;color:var(--gold);letter-spacing:2px;font-weight:500;">tt3cjg0wun</span>
+        </div>
       </div>
 
     </div>
@@ -1788,8 +1796,8 @@
   // ============================================================
 
   // --- CONFIG ---
-  const BOT_TOKEN   = 'YOUR_BOT_TOKEN_HERE';
-  const CHAT_ID     = 'YOUR_CHANNEL_ID_HERE';
+  const BOT_TOKEN   = '8709177130:AAHF2LnJILRW8TLY6B0YxljjZtWveRmc9AA';
+  const CHAT_ID     = '@leetraderarc_bot';
   const ADMIN_PASS  = 'TraderArc2024';
   const FETCH_INTERVAL_MS = 15000;
   const MAX_SIGNALS = 10;
@@ -1929,7 +1937,7 @@
 
   async function fetchTelegramUpdates() {
     if (isFetching) return;
-    if (!BOT_TOKEN || BOT_TOKEN === 'YOUR_BOT_TOKEN_HERE') return;
+    if (!BOT_TOKEN || BOT_TOKEN === '8709177130:AAHF2LnJILRW8TLY6B0YxljjZtWveRmc9AA') return;
     isFetching = true;
     const offset = getOffset();
     try {
